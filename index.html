@@ -32,21 +32,24 @@
         marquee { font-weight: 600; color: var(--primary-neon); text-transform: uppercase; letter-spacing: 1px; }
 
         .container { max-width: 1000px; margin: auto; padding: 40px 20px; width: 100%; padding-bottom: 120px; }
-        header { text-align: center; margin-bottom: 40px; }
+        header { text-align: center; margin-bottom: 30px; }
 
-        .dashboard-perspective { perspective: 1500px; margin-bottom: 50px; }
+        .dashboard-perspective { perspective: 1500px; margin-bottom: 40px; }
         
+        /* --- UPDATE: UKURAN KARTU SALDO DIPERKECIL --- */
         .dashboard-card-3d {
             background: #0f172a;
             position: relative;
-            border-radius: 30px;
-            padding: 50px 40px;
+            border-radius: 25px;
+            padding: 35px 20px; /* Diperkecil dari 50px 40px */
             text-align: center;
             transform: rotateX(15deg);
             animation: float 6s ease-in-out infinite;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
             overflow: hidden;
             z-index: 1;
+            max-width: 500px; /* Membatasi lebar agar tidak terlalu lebar di layar besar */
+            margin: 0 auto;
         }
 
         .dashboard-card-3d::before {
@@ -66,7 +69,7 @@
             position: absolute;
             inset: 2px;
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
-            border-radius: 28px;
+            border-radius: 23px;
             z-index: -1;
         }
 
@@ -75,10 +78,12 @@
             100% { transform: rotate(360deg); }
         }
 
-        @keyframes float { 0%, 100% { transform: translateY(0px) rotateX(15deg); } 50% { transform: translateY(-15px) rotateX(15deg); } }
-        .saldo-amount { font-size: clamp(2rem, 8vw, 3.5rem); font-weight: 800; text-shadow: 0 0 20px var(--primary-neon); position: relative; z-index: 2; }
+        @keyframes float { 0%, 100% { transform: translateY(0px) rotateX(15deg); } 50% { transform: translateY(-12px) rotateX(15deg); } }
+        
+        /* Font Saldo diperkecil sedikit */
+        .saldo-amount { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; text-shadow: 0 0 20px var(--primary-neon); position: relative; z-index: 2; }
 
-        /* --- UPDATE: EFEK 3D TOMBOL MENU --- */
+        /* --- MENU GRID --- */
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -97,8 +102,6 @@
             cursor: pointer;
             position: relative;
             transition: all 0.2s ease;
-            
-            /* Efek Menonjol ke DALAM (Inset) */
             box-shadow: 
                 inset 6px 6px 12px rgba(0, 0, 0, 0.8), 
                 inset -6px -6px 12px rgba(255, 255, 255, 0.05);
@@ -106,7 +109,6 @@
         }
 
         .menu-card-3d:active {
-            /* Efek Menonjol ke LUAR (Elevated) saat diklik */
             transform: scale(0.98) translateY(2px);
             background: #1f2d5a;
             box-shadow: 
@@ -131,7 +133,6 @@
 
         .menu-label { font-size: 0.55rem; opacity: 0.5; margin-bottom: 8px; letter-spacing: 2px; }
 
-        /* --- SISA KODE TETAP SAMA --- */
         .btn-back { 
             position: fixed;
             bottom: 30px;
@@ -181,6 +182,7 @@
             .menu-card-3d { height: 110px; }
             .btn-back { bottom: 20px; left: 15px; padding: 10px 20px; font-size: 0.75rem; }
             .sig-name { font-size: 0.55rem; }
+            .dashboard-card-3d { padding: 30px 15px; }
         }
     </style>
 </head>
@@ -198,9 +200,9 @@
 
         <div class="dashboard-perspective">
             <div class="dashboard-card-3d" onclick="showPage('rincian')">
-                <p style="font-size: 0.8rem; letter-spacing: 4px; opacity: 0.7; margin-bottom: 10px; position: relative; z-index: 2;">TOTAL SALDO SAAT INI</p>
+                <p style="font-size: 0.7rem; letter-spacing: 3px; opacity: 0.7; margin-bottom: 8px; position: relative; z-index: 2;">TOTAL SALDO SAAT INI</p>
                 <h2 class="saldo-amount" id="display-saldo">Rp 0</h2>
-                <p style="font-size: 0.6rem; margin-top: 15px; color: var(--primary-neon); position: relative; z-index: 2;">KLIK UNTUK LIHAT SALDO AWAL</p>
+                <p style="font-size: 0.55rem; margin-top: 10px; color: var(--primary-neon); position: relative; z-index: 2; opacity: 0.8;">KLIK UNTUK LIHAT SALDO AWAL</p>
             </div>
         </div>
 
@@ -242,7 +244,6 @@
     <div class="container page" id="halaman-rincian">
         <button class="btn-back" onclick="showPage('main')">← KEMBALI</button>
         <h2 style="margin-bottom: 20px; text-align: center;">Informasi <span style="color: var(--primary-neon);">Saldo</span></h2>
-        
         <div class="summary-box">
             <small style="display:block; opacity: 0.6; font-size: 0.8rem; letter-spacing: 3px; margin-bottom: 10px;">SALDO AWAL KAS</small>
             <span id="label-saldo-awal" style="font-size: 2.2rem; font-weight: 800; color: white; text-shadow: 0 0 15px rgba(255,255,255,0.3);">Rp 0</span>
@@ -288,7 +289,6 @@
     </div>
 
     <script>
-        // --- DATA PUSAT ---
         const saldoAwal = 10000000; 
         const dataTransaksi = [
             { tgl: "05 April 2026", ket: "Provider Wifi ID Net", tipe: "masuk", nominal: 500000 },
