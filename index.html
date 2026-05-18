@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -15,165 +15,157 @@
             --bg-dark: #0f172a;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
-
-        body {
-            background: radial-gradient(circle at center, #1e293b 0%, #030712 100%);
-            color: white;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .marquee-container {
-            background: rgba(0, 0, 0, 0.8);
-            padding: 12px 0;
-            border-bottom: 2px solid var(--primary-neon);
-        }
-        marquee { font-weight: 600; color: var(--primary-neon); text-transform: uppercase; letter-spacing: 1px; }
-
-        .container { max-width: 1000px; margin: auto; padding: 40px 20px; width: 100%; padding-bottom: 120px; }
-        header { text-align: center; margin-bottom: 30px; }
-
-        .dashboard-perspective { perspective: 1500px; margin-bottom: 40px; }
-        
-        /* --- UPDATE: UKURAN KARTU SALDO DIPERKECIL --- */
-        .dashboard-card-3d {
-            background: #0f172a;
-            position: relative;
-            border-radius: 25px;
-            padding: 35px 20px; /* Diperkecil dari 50px 40px */
-            text-align: center;
-            transform: rotateX(15deg);
-            animation: float 6s ease-in-out infinite;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.6);
-            overflow: hidden;
-            z-index: 1;
-            max-width: 500px; /* Membatasi lebar agar tidak terlalu lebar di layar besar */
-            margin: 0 auto;
-        }
-
-        .dashboard-card-3d::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(transparent, transparent, transparent, var(--primary-neon));
-            animation: rotate-light 4s linear infinite;
-            z-index: -2;
-        }
-
-        .dashboard-card-3d::after {
-            content: "";
-            position: absolute;
-            inset: 2px;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
-            border-radius: 23px;
-            z-index: -1;
-        }
-
-        @keyframes rotate-light {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes float { 0%, 100% { transform: translateY(0px) rotateX(15deg); } 50% { transform: translateY(-12px) rotateX(15deg); } }
-        
-        /* Font Saldo diperkecil sedikit */
-        .saldo-amount { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; text-shadow: 0 0 20px var(--primary-neon); position: relative; z-index: 2; }
-
-        /* --- MENU GRID --- */
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            perspective: 1200px;
-        }
-
-        .menu-card-3d {
-            background: #16213e;
-            height: 120px;
-            border-radius: 20px;
+        /* --- LOADING SCREEN STYLES --- */
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #030712;
+            z-index: 9999;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s ease;
-            box-shadow: 
-                inset 6px 6px 12px rgba(0, 0, 0, 0.8), 
-                inset -6px -6px 12px rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.3);
+            align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
         }
 
-        .menu-card-3d:active {
-            transform: scale(0.98) translateY(2px);
-            background: #1f2d5a;
-            box-shadow: 
-                0px 10px 20px rgba(0, 0, 0, 0.6),
-                0px 0px 15px rgba(0, 242, 255, 0.3);
-            border-color: var(--primary-neon);
+        .loading-container { 
+            display: flex; 
+            flex-direction: column;
+            align-items: center;
+            gap: 5px; 
+            position: relative; 
         }
 
-        .menu-card-3d span { 
-            font-weight: 600; 
-            font-size: 0.8rem; 
-            text-transform: uppercase; 
-            text-align: center; 
-            line-height: 1.2;
-            transition: 0.3s;
+        .rw-text {
+            display: flex;
+            gap: 10px;
         }
 
-        .menu-card-3d:active span {
+        .char {
+            font-size: clamp(3.5rem, 12vw, 6rem);
+            font-family: 'Arial Black', sans-serif;
+            font-weight: 900;
+            color: var(--primary-neon); 
+            text-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
+            background: radial-gradient(circle, #ffffff 10%, var(--primary-neon) 50%, transparent 100%);
+            background-size: 150% 150%;
+            background-position: center;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: lightStay 4s forwards;
+            opacity: 0;
+        }
+
+        .loading-subtitle {
             color: var(--primary-neon);
-            text-shadow: 0 0 10px var(--primary-neon);
+            font-size: clamp(0.6rem, 2vw, 0.8rem);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 300;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: subtitleAppear 2s forwards 1.5s;
+            position: relative;
+            padding-top: 10px;
+            margin-top: 5px;
+            text-align: center;
         }
 
+        .loading-subtitle::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary-neon), transparent);
+            animation: lineGrow 1.5s forwards 1.2s;
+        }
+
+        /* --- ANIMASI BERKEDIP PELAN (PULSE) --- */
+        .loading-status {
+            color: var(--primary-neon);
+            margin-top: 80px;
+            letter-spacing: 5px;
+            font-size: 0.6rem;
+            font-weight: 400;
+            animation: fadeSmooth 2.5s ease-in-out infinite; /* Animasi berkedip pelan */
+        }
+
+        @keyframes fadeSmooth {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes lightStay {
+            0% { opacity: 0; transform: scale(0.8); filter: brightness(0); }
+            10% { opacity: 1; transform: scale(1.1); filter: brightness(2); }
+            20%, 100% { opacity: 1; transform: scale(1); filter: brightness(1); color: var(--primary-neon); }
+        }
+
+        @keyframes subtitleAppear {
+            to { opacity: 0.8; transform: translateY(0); }
+        }
+
+        @keyframes lineGrow {
+            to { width: 120%; }
+        }
+
+        .char:nth-child(1) { animation-delay: 0.1s; }
+        .char:nth-child(2) { animation-delay: 0.3s; }
+        .char:nth-child(3) { animation-delay: 0.5s; }
+        .char:nth-child(4) { animation-delay: 0.7s; }
+        .char:nth-child(5) { animation-delay: 0.9s; }
+        .char:nth-child(6) { animation-delay: 1.1s; }
+
+        .floor-light {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 25px;
+            background: radial-gradient(ellipse, rgba(0, 242, 255, 0.4) 0%, transparent 80%);
+            filter: blur(15px);
+            animation: floorAppear 4s forwards;
+            opacity: 0;
+        }
+
+        @keyframes floorAppear {
+            0%, 10% { opacity: 0; }
+            30%, 100% { opacity: 1; }
+        }
+
+        /* --- DASHBOARD STYLES --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background: radial-gradient(circle at center, #1e293b 0%, #030712 100%); color: white; min-height: 100vh; overflow-x: hidden; }
+        .marquee-container { background: rgba(0, 0, 0, 0.8); padding: 12px 0; border-bottom: 2px solid var(--primary-neon); }
+        marquee { font-weight: 600; color: var(--primary-neon); text-transform: uppercase; letter-spacing: 1px; }
+        .container { max-width: 1000px; margin: auto; padding: 40px 20px; width: 100%; padding-bottom: 120px; }
+        header { text-align: center; margin-bottom: 30px; }
+        .dashboard-perspective { perspective: 1500px; margin-bottom: 40px; }
+        .dashboard-card-3d { background: #0f172a; position: relative; border-radius: 25px; padding: 35px 20px; text-align: center; transform: rotateX(15deg); animation: float 6s ease-in-out infinite; box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; z-index: 1; max-width: 500px; margin: 0 auto; }
+        .dashboard-card-3d::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, transparent, var(--primary-neon)); animation: rotate-light 4s linear infinite; z-index: -2; }
+        .dashboard-card-3d::after { content: ""; position: absolute; inset: 2px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)); border-radius: 23px; z-index: -1; }
+        @keyframes rotate-light { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px) rotateX(15deg); } 50% { transform: translateY(-12px) rotateX(15deg); } }
+        .saldo-amount { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; text-shadow: 0 0 20px var(--primary-neon); position: relative; z-index: 2; }
+        .menu-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; perspective: 1200px; }
+        .menu-card-3d { background: #16213e; height: 120px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.2s ease; box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.8), inset -6px -6px 12px rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 0, 0, 0.3); }
+        .menu-card-3d:active { transform: scale(0.98) translateY(2px); background: #1f2d5a; box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.6), 0px 0px 15px rgba(0, 242, 255, 0.3); border-color: var(--primary-neon); }
+        .menu-card-3d span { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; text-align: center; line-height: 1.2; transition: 0.3s; }
+        .menu-card-3d:active span { color: var(--primary-neon); text-shadow: 0 0 10px var(--primary-neon); }
         .menu-label { font-size: 0.55rem; opacity: 0.5; margin-bottom: 8px; letter-spacing: 2px; }
-
-        .btn-back { 
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            z-index: 1000;
-            background: white; 
-            border: none; 
-            padding: 12px 25px; 
-            border-radius: 30px; 
-            cursor: pointer; 
-            font-weight: 700; 
-            color: black;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
-
+        .btn-back { position: fixed; bottom: 30px; left: 20px; z-index: 1000; background: white; border: none; padding: 12px 25px; border-radius: 30px; cursor: pointer; font-weight: 700; color: black; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         .page { display: none; animation: slideUp 0.5s ease forwards; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .active { display: block; }
-
         .list-container { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 15px; margin-top: 20px; }
         table { width: 100%; border-collapse: collapse; }
         td { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
-        
-        .summary-box { 
-            background: var(--glass); 
-            padding: 40px 20px; 
-            border-radius: 25px; 
-            text-align: center; 
-            margin-top: 50px;
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
-        }
-
-        .signature-section {
-            margin-top: 50px;
-            display: flex;
-            justify-content: space-between;
-            padding: 20px 0;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            gap: 10px;
-        }
+        .summary-box { background: var(--glass); padding: 40px 20px; border-radius: 25px; text-align: center; margin-top: 50px; border: 1px solid rgba(0, 242, 255, 0.3); box-shadow: 0 0 20px rgba(0, 242, 255, 0.1); }
+        .signature-section { margin-top: 50px; display: flex; justify-content: space-between; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.1); gap: 10px; }
         .sig-box { text-align: center; font-size: 0.6rem; flex: 1; }
         .sig-name { color: var(--primary-neon); font-weight: 600; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 5px; white-space: nowrap; }
 
@@ -188,8 +180,27 @@
 </head>
 <body>
 
+    <!-- LOADING SCREEN SECTION -->
+    <div id="loading-screen">
+        <div class="loading-container">
+            <div class="rw-text">
+                <span class="char">R</span>
+                <span class="char">W</span>
+                <span class="char" style="width: 20px;"></span>
+                <span class="char">0</span>
+                <span class="char">1</span>
+                <span class="char">3</span>
+            </div>
+            <div class="loading-subtitle">Permata Nusa Indah Emerald</div>
+            <div class="floor-light"></div>
+        </div>
+        <!-- CLASS loading-status DENGAN ANIMASI BERKEDIP -->
+        <p class="loading-status">SISTEM SEDANG MEMUAT...</p>
+    </div>
+
+    <!-- MAIN DASHBOARD SECTION -->
     <div class="marquee-container">
-        <marquee scrollamount="7">Laporan Keuangan Rukun Warga 013 - PNIC BLOK EMERALD</marquee>
+        <marquee scrollamount="7">Laporan Keuangan Rukun Warga 013 - PNIC BLOK EMERALD THN 2026 </marquee>
     </div>
 
     <div class="container page active" id="main-content">
@@ -200,7 +211,7 @@
 
         <div class="dashboard-perspective">
             <div class="dashboard-card-3d" onclick="showPage('rincian')">
-                <p style="font-size: 0.7rem; letter-spacing: 3px; opacity: 0.7; margin-bottom: 8px; position: relative; z-index: 2;">TOTAL SALDO SAAT INI</p>
+                <p style="font-size: 0.7rem; letter-spacing: 3px; opacity: 0.7; margin-bottom: 8px; position: relative; z-index: 2;">TOTAL SALDO / THN 2026</p>
                 <h2 class="saldo-amount" id="display-saldo">Rp 0</h2>
                 <p style="font-size: 0.55rem; margin-top: 10px; color: var(--primary-neon); position: relative; z-index: 2; opacity: 0.8;">KLIK UNTUK LIHAT SALDO AWAL</p>
             </div>
@@ -241,13 +252,14 @@
         </div>
     </div>
 
+    <!-- Halaman rincian, pemasukan, pengeluaran, diagram tetap sama... -->
     <div class="container page" id="halaman-rincian">
         <button class="btn-back" onclick="showPage('main')">← KEMBALI</button>
         <h2 style="margin-bottom: 20px; text-align: center;">Informasi <span style="color: var(--primary-neon);">Saldo</span></h2>
         <div class="summary-box">
             <small style="display:block; opacity: 0.6; font-size: 0.8rem; letter-spacing: 3px; margin-bottom: 10px;">SALDO AWAL KAS</small>
             <span id="label-saldo-awal" style="font-size: 2.2rem; font-weight: 800; color: white; text-shadow: 0 0 15px rgba(255,255,255,0.3);">Rp 0</span>
-            <p style="margin-top: 20px; font-size: 0.7rem; opacity: 0.5; line-height: 1.5;">Saldo ini merupakan saldo Awal sebelum thn 2026 .</p>
+            <p style="margin-top: 20px; font-size: 0.7rem; opacity: 0.5; line-height: 1.5;">Saldo ini merupakan saldo pembukaan sebelum akumulasi transaksi bulan berjalan.</p>
         </div>
     </div>
 
@@ -291,13 +303,12 @@
     <script>
         const saldoAwal = 0; 
         const dataTransaksi = [
-            { tgl: "04 April 2026", ket: "Kontribusi lingkungan NBN (nuansa Berkah Net)<br> 3 bulan <li>Januari                        <li>Februari <li>Maret", tipe: "masuk", nominal: 1950000 },
-           { tgl: "5 April 2026", ket: "Kontribusi lingkungan ID net, <br> <li> maret ", tipe: "masuk", nominal: 680000 },
-           { tgl: "10 Mei 2026", ket: "Komsumsi rapat pengurus Rw 013", tipe: "keluar", nominal: 22000 },
-          {tgl: "15 Mei 2026", ket: "Perbaikan Sarana dan prasarana / sport center <br>Rincian:  <li>Pasir setengah colt = Rp.300,000 <li>Semen 4 sak = Rp 200.000, <li> Biaya admin Tranfer Dari bendaha ke pak waluyo = Rp. 2.500 ", tipe: "keluar", nominal: 502500 },
+            { tgl: "04 April 2026", ket: "Kontribusi lingkungan NBN (nuansa Berkah Net)<br> 3 bulan <li>Januari <li>Februari <li>Maret", tipe: "masuk", nominal: 1950000 },
+            { tgl: "5 April 2026", ket: "Kontribusi lingkungan ID net, <br> 1 bulan <li> maret ", tipe: "masuk", nominal: 680000 },
+            { tgl: "10 Mei 2026", ket: "Komsumsi rapat pengurus Rw 013", tipe: "keluar", nominal: 22000 },
+            { tgl: "15 Mei 2026", ket: "Perbaikan lapangan voli <br>Rincian: <li>Pasir setengah colt = Rp.300,000 <li>Semen 4 sak = Rp 200.000, <li> Biaya admin Tranfer Dari bendaha ke pak waluyo = Rp. 2.500 ", tipe: "keluar", nominal: 502500 },
             { tgl: "16 Mei 2026", ket: "Kegiatan Posyandu", tipe: "keluar", nominal: 200000 },
         ];
-            
 
         function bukaGoogleDrive() {
             window.open("https://drive.google.com/drive/folders/1wPSnp3hTXV2NeDf2k9m4VcN9_rtzDdYf", "_blank");
@@ -327,12 +338,10 @@
             });
 
             const saldoAkhir = saldoAwal + tMasuk - tKeluar;
-
             document.getElementById('display-saldo').innerText = "Rp " + saldoAkhir.toLocaleString('id-ID');
             document.getElementById('label-saldo-awal').innerText = "Rp " + saldoAwal.toLocaleString('id-ID');
             document.getElementById('total-masuk-hal').innerText = "Rp " + tMasuk.toLocaleString('id-ID');
             document.getElementById('total-keluar-hal').innerText = "Rp " + tKeluar.toLocaleString('id-ID');
-            
             document.getElementById('table-pemasukan').innerHTML = htmlIn;
             document.getElementById('table-pengeluaran').innerHTML = htmlOut;
 
@@ -345,6 +354,14 @@
                 document.getElementById('pct-in').innerText = pIn + "%";
                 document.getElementById('pct-out').innerText = pOut + "%";
             }
+
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.visibility = 'hidden';
+                }, 800);
+            }, 5000);
         }
 
         function showPage(pageId) {
@@ -357,5 +374,5 @@
         window.onload = initApp;
     </script>
 </body>
-</html>
-
+        </html>
+        
