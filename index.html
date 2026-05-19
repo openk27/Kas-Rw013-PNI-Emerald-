@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -83,14 +83,13 @@
             animation: lineGrow 1.5s forwards 1.2s;
         }
 
-        /* --- ANIMASI BERKEDIP PELAN (PULSE) --- */
         .loading-status {
             color: var(--primary-neon);
             margin-top: 80px;
             letter-spacing: 5px;
             font-size: 0.6rem;
             font-weight: 400;
-            animation: fadeSmooth 2.5s ease-in-out infinite; /* Animasi berkedip pelan */
+            animation: fadeSmooth 2.5s ease-in-out infinite;
         }
 
         @keyframes fadeSmooth {
@@ -161,9 +160,10 @@
         .page { display: none; animation: slideUp 0.5s ease forwards; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .active { display: block; }
-        .list-container { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 15px; margin-top: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        td { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+        .list-container { background: rgba(255,255,255,0.03); border-radius: 20px; padding: 15px; margin-top: 20px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 300px; }
+        th { text-align: left; padding: 12px 10px; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--primary-neon); border-bottom: 2px solid rgba(0, 242, 255, 0.2); }
+        td { padding: 15px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; vertical-align: top; }
         .summary-box { background: var(--glass); padding: 40px 20px; border-radius: 25px; text-align: center; margin-top: 50px; border: 1px solid rgba(0, 242, 255, 0.3); box-shadow: 0 0 20px rgba(0, 242, 255, 0.1); }
         .signature-section { margin-top: 50px; display: flex; justify-content: space-between; padding: 20px 0; border-top: 1px solid rgba(255,255,255,0.1); gap: 10px; }
         .sig-box { text-align: center; font-size: 0.6rem; flex: 1; }
@@ -175,6 +175,7 @@
             .btn-back { bottom: 20px; left: 15px; padding: 10px 20px; font-size: 0.75rem; }
             .sig-name { font-size: 0.55rem; }
             .dashboard-card-3d { padding: 30px 15px; }
+            td, th { font-size: 0.7rem; padding: 10px 5px; }
         }
     </style>
 </head>
@@ -194,7 +195,6 @@
             <div class="loading-subtitle">Permata Nusa Indah Emerald</div>
             <div class="floor-light"></div>
         </div>
-        <!-- CLASS loading-status DENGAN ANIMASI BERKEDIP -->
         <p class="loading-status">SISTEM SEDANG MEMUAT...</p>
     </div>
 
@@ -252,7 +252,6 @@
         </div>
     </div>
 
-    <!-- Halaman rincian, pemasukan, pengeluaran, diagram tetap sama... -->
     <div class="container page" id="halaman-rincian">
         <button class="btn-back" onclick="showPage('main')">← KEMBALI</button>
         <h2 style="margin-bottom: 20px; text-align: center;">Informasi <span style="color: var(--primary-neon);">Saldo</span></h2>
@@ -268,7 +267,16 @@
         <h2 style="margin-bottom: 10px; color: var(--income);">Data Pemasukan</h2>
         <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 20px;">Total Dana Masuk: <span id="total-masuk-hal" style="color: var(--income); font-weight: bold;"></span></p>
         <div class="list-container">
-            <table id="table-pemasukan"></table>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Tgl.</th>
+                        <th style="width: 50%;">Rincian</th>
+                        <th style="width: 25%; text-align: right;">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody id="table-pemasukan"></tbody>
+            </table>
         </div>
     </div>
 
@@ -277,7 +285,16 @@
         <h2 style="margin-bottom: 10px; color: var(--expense);">Data Pengeluaran</h2>
         <p style="font-size: 0.8rem; opacity: 0.6; margin-bottom: 20px;">Total Dana Keluar: <span id="total-keluar-hal" style="color: var(--expense); font-weight: bold;"></span></p>
         <div class="list-container">
-            <table id="table-pengeluaran"></table>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Tgl.</th>
+                        <th style="width: 50%;">Rincian</th>
+                        <th style="width: 25%; text-align: right;">Jumlah</th>
+                    </tr>
+                </thead>
+                <tbody id="table-pengeluaran"></tbody>
+            </table>
         </div>
     </div>
 
@@ -304,9 +321,9 @@
         const saldoAwal = 0; 
         const dataTransaksi = [
             { tgl: "04 April 2026", ket: "Kontribusi lingkungan NBN (nuansa Berkah Net)<br> 3 bulan <li>Januari <li>Februari <li>Maret", tipe: "masuk", nominal: 1950000 },
-            { tgl: "5 April 2026", ket: "Kontribusi lingkungan ID net, <br> 1 bulan <li> maret ", tipe: "masuk", nominal: 680000 },
+            { tgl: "5 April 2026", ket: "Kontribusi lingkungan ID net, <br>  <li> bulan maret ", tipe: "masuk", nominal: 680000 },
             { tgl: "10 Mei 2026", ket: "Komsumsi rapat pengurus Rw 013", tipe: "keluar", nominal: 80000 },
-            { tgl: "15 Mei 2026", ket: "Perbaikan lapangan voli <br>Rincian: <li>Pasir setengah colt = Rp.300,000 <li>Semen 4 sak = Rp 200.000, <li> Biaya admin Tranfer Dari bendaha ke pak waluyo = Rp. 2.500 ", tipe: "keluar", nominal: 502500 },
+            { tgl: "15 Mei 2026", ket: "Perbaikan sarana prasarana / sport center <br>Rincian: <li>Pasir setengah colt = Rp.300,000 <li>Semen 4 sak = Rp 200.000, <li> Biaya admin Tranfer Dari bendaha ke pak waluyo = Rp. 2.500 ", tipe: "keluar", nominal: 502500 },
             { tgl: "16 Mei 2026", ket: "Kegiatan Posyandu", tipe: "keluar", nominal: 200000 },
         ];
 
@@ -322,9 +339,10 @@
 
             dataTransaksi.forEach(item => {
                 const row = `<tr>
-                    <td><small style="opacity:0.5">${item.tgl}</small><br><b>${item.ket}</b></td>
-                    <td style="text-align:right; color:${item.tipe === 'masuk' ? 'var(--income)' : 'var(--expense)'}">
-                        ${item.tipe === 'masuk' ? '+' : '-'} ${item.nominal.toLocaleString('id-ID')}
+                    <td style="font-size: 0.7rem; opacity: 0.8;">${item.tgl}</td>
+                    <td>${item.ket}</td>
+                    <td style="text-align:right; font-weight: 600; color:${item.tipe === 'masuk' ? 'var(--income)' : 'var(--expense)'}">
+                        ${item.nominal.toLocaleString('id-ID')}
                     </td>
                 </tr>`;
                 
@@ -374,5 +392,4 @@
         window.onload = initApp;
     </script>
 </body>
-        </html>
-        
+</html>
