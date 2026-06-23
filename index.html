@@ -144,7 +144,7 @@
         .container { max-width: 1000px; margin: auto; padding: 40px 20px; width: 100%; padding-bottom: 120px; }
         header { text-align: center; margin-bottom: 30px; }
         .dashboard-perspective { perspective: 1500px; margin-bottom: 40px; }
-        .dashboard-card-3d { background: #0f172a; position: relative; border-radius: 25px; padding: 35px 20px; text-align: center; transform: rotateX(15deg); animation: float 6s ease-in-out infinite; box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; z-index: 1; max-width: 500px; margin: 0 auto; }
+        .dashboard-card-3d { background: #0f172a; position: relative; border-radius: 25px; padding: 35px 20px; text-align: center; transform: rotateX(15deg); animation: float 6s ease-in-out infinite; box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; z-index: 1; max-width: 500px; margin: 0 auto; cursor: pointer; }
         .dashboard-card-3d::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, transparent, var(--primary-neon)); animation: rotate-light 4s linear infinite; z-index: -2; }
         .dashboard-card-3d::after { content: ""; position: absolute; inset: 2px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)); border-radius: 23px; z-index: -1; }
         @keyframes rotate-light { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -332,6 +332,16 @@
         <button class="btn-back" onclick="showPage('main')">← KEMBALI</button>
         <h2 style="margin-bottom: 20px; color: #eab308;">Kelola Data Kas</h2>
         
+        <!-- Form Update Saldo Awal -->
+        <div class="form-container" style="border-color: #eab308; margin-bottom: 35px;">
+            <h3 style="margin-bottom: 15px; font-size: 1rem; color: #eab308;">Pengaturan Saldo Awal</h3>
+            <div class="form-group">
+                <label>Nominal Saldo Awal (Rp)</label>
+                <input type="number" id="input-saldo-awal" placeholder="Contoh: 1000000">
+            </div>
+            <button type="button" class="btn-submit" style="background: #eab308; color: black;" onclick="simpanSaldoAwal()">Update Saldo Awal</button>
+        </div>
+
         <div class="form-container">
             <h3 id="form-title" style="margin-bottom: 15px; font-size: 1rem;">Tambah Transaksi Baru</h3>
             <input type="hidden" id="tx-index" value="">
@@ -397,7 +407,6 @@
     <!-- Firebase SDK (Modular v9) via CDN -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
         // Konfigurasi Firebase
@@ -413,11 +422,10 @@
 
         // Inisialisasi Firebase
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
         const db = getDatabase(app);
 
         // Variabel Global Sistem
-        const saldoAwal = 0; 
+        let saldoAwalGlobal = 0; 
         const PIN_ADMIN = "Rw013"; 
         let klikHeaderCount = 0;
         let klikHeaderTimer;
@@ -490,7 +498,7 @@
             }
         }
 
-        function initApp() {
+        function renderDataDashboard() {
             cekStatusAkses();
             let tMasuk = 0;
             let tKeluar = 0;
@@ -526,9 +534,9 @@
                 </tr>`;
             });
 
-            const saldoAkhir = saldoAwal + tMasuk - tKeluar;
+            const saldoAkhir = saldoAwalGlobal + tMasuk - tKeluar;
             document.getElementById('display-saldo').innerText = "Rp " + saldoAkhir.toLocaleString('id-ID');
-            document.getElementById('label-saldo-awal').innerText = "Rp " + saldoAwal.toLocaleString('id-ID');
+            document.getElementById('label-saldo-awal').innerText = "Rp " + saldoAwalGlobal.toLocaleString('id-ID');
             document.getElementById('total-masuk-hal').innerText = "Rp " + tMasuk.toLocaleString('id-ID');
             document.getElementById('total-keluar-hal').innerText = "Rp " + tKeluar.toLocaleString('id-ID');
             document.getElementById('table-pemasukan').innerHTML = htmlIn;
@@ -551,7 +559,7 @@
             }
         }
 
-        // Sinkronisasi Data dari Firebase Realtime Database
+        // Sinkronisasi Real-Time Transaksi dari Firebase Cloud
         const dataRef = ref(db, 'transaksi');
         onValue(dataRef, (snapshot) => {
             const data = snapshot.val();
@@ -559,14 +567,26 @@
                 dataTransaksi = data;
                 localStorage.setItem('kas_rw013_data', JSON.stringify(dataTransaksi));
             } else {
-                // Jika database kosong (pertama kali), unggah defaultData ke Firebase
                 set(dataRef, defaultData);
             }
-            initApp();
+            renderDataDashboard();
+        });
+
+        // Sinkronisasi Real-Time Saldo Awal dari Firebase Cloud
+        const saldoAwalRef = ref(db, 'saldo_awal');
+        onValue(saldoAwalRef, (snapshot) => {
+            const val = snapshot.val();
+            if (val !== null) {
+                saldoAwalGlobal = parseInt(val);
+                document.getElementById('input-saldo-awal').value = saldoAwalGlobal;
+            } else {
+                set(saldoAwalRef, 0);
+            }
+            renderDataDashboard();
         });
 
         window.onload = () => {
-            initApp();
+            renderDataDashboard();
             setTimeout(() => {
                 const loader = document.getElementById('loading-screen');
                 if(loader) {
@@ -588,7 +608,22 @@
             resetForm();
         }
 
-        /* --- MANAJEMEN DATA INTEGRASI FIREBASE --- */
+        /* --- MANAJEMEN DATA INTEGRASI FIREBASE REALTIME --- */
+
+        window.simpanSaldoAwal = () => {
+            const nominalAwal = parseInt(document.getElementById('input-saldo-awal').value);
+            if (isNaN(nominalAwal)) {
+                alert('Masukkan angka nominal saldo awal yang valid!');
+                return;
+            }
+            set(saldoAwalRef, nominalAwal)
+                .then(() => {
+                    alert('Saldo awal berhasil diperbarui secara permanen dan instan ke seluruh warga!');
+                })
+                .catch((err) => {
+                    alert('Gagal memperbarui saldo awal: ' + err.message);
+                });
+        }
 
         window.simpanTransaksi = () => {
             const tgl = document.getElementById('tx-tgl').value.trim();
@@ -610,11 +645,10 @@
                 dataTransaksi[index] = dataObj;
             }
 
-            // Simpan langsung ke cloud Firebase Realtime Database
             set(dataRef, dataTransaksi)
                 .then(() => {
                     resetForm();
-                    alert('Data transaksi berhasil disimpan ke server Cloud!');
+                    alert('Data transaksi berhasil disimpan ke server Cloud dan otomatis terupdate di browser warga!');
                 })
                 .catch((error) => {
                     alert('Gagal menyinkronkan data: ' + error.message);
@@ -641,7 +675,7 @@
                 set(dataRef, dataTransaksi)
                     .then(() => {
                         resetForm();
-                        alert('Data berhasil dihapus dari server cloud.');
+                        alert('Data berhasil dihapus dari cloud dan layar warga.');
                     });
             }
         }
