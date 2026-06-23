@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kas PNI RW 013 - 3D Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-neon: #00f2ff;
@@ -151,6 +151,7 @@
         @keyframes float { 0%, 100% { transform: translateY(0px) rotateX(15deg); } 50% { transform: translateY(-12px) rotateX(15deg); } }
         .saldo-amount { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; text-shadow: 0 0 20px var(--primary-neon); position: relative; z-index: 2; }
         
+        /* Layout Grid Fleksibel Otomatis */
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; perspective: 1200px; }
         .menu-card-3d { background: #16213e; height: 120px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.2s ease; box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.8), inset -6px -6px 12px rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 0, 0, 0.3); padding: 5px; }
         .menu-card-3d:active { transform: scale(0.98) translateY(2px); background: #1f2d5a; box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.6), 0px 0px 15px rgba(0, 242, 255, 0.3); border-color: var(--primary-neon); }
@@ -171,11 +172,13 @@
         .sig-box { text-align: center; font-size: 0.6rem; flex: 1; }
         .sig-name { color: var(--primary-neon); font-weight: 600; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 5px; white-space: nowrap; }
 
+        /* Gaya Khusus Ukuran Teks Ringkasan Total Halaman */
         .page-total-summary { font-size: 1.05rem; opacity: 0.85; margin-bottom: 20px; letter-spacing: 0.5px; }
         .page-total-summary .amount { font-size: clamp(1.4rem, 5vw, 1.9rem); font-weight: 800; display: block; margin-top: 5px; }
         .page-total-summary .amount.in { color: var(--income); text-shadow: 0 0 15px rgba(74, 222, 128, 0.4); }
         .page-total-summary .amount.out { color: var(--expense); text-shadow: 0 0 15px rgba(248, 113, 113, 0.4); }
 
+        /* Form Kelola Data Styles */
         .form-container { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(0, 242, 255, 0.2); margin-bottom: 25px; }
         .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
         .form-group label { font-size: 0.75rem; color: var(--primary-neon); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
@@ -186,6 +189,7 @@
         .btn-edit { background: #eab308; color: black; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: bold; margin-right: 5px; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: bold; }
 
+        /* Tombol keluar dari Mode Admin */
         .btn-logout { background: transparent; border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-size: 0.6rem; padding: 4px 10px; border-radius: 15px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .btn-logout:hover { background: #ef4444; color: white; }
 
@@ -432,6 +436,7 @@
 
         let dataTransaksi = JSON.parse(localStorage.getItem('kas_rw013_data')) || defaultData;
 
+        // Hubungkan fungsi ke window agar dapat dipanggil dari elemen HTML onclick
         window.bukaGoogleDrive = () => {
             window.open("https://drive.google.com/drive/folders/1wPSnp3hTXV2NeDf2k9m4VcN9_rtzDdYf", "_blank");
         }
@@ -464,19 +469,15 @@
             const btnLogout = document.getElementById('btn-logout-admin');
 
             if (isAdmin) {
-                if(menuKelola) menuKelola.style.display = "flex";
-                if(statusMode) {
-                    statusMode.innerText = "MODE: ADMIN (ROHMAN / FIRMANSAH)";
-                    statusMode.style.color = "#eab308";
-                }
-                if(btnLogout) btnLogout.style.display = "inline-block";
+                menuKelola.style.display = "flex";
+                statusMode.innerText = "MODE: ADMIN (ROHMAN / FIRMANSAH)";
+                statusMode.style.color = "#eab308";
+                btnLogout.style.display = "inline-block";
             } else {
-                if(menuKelola) menuKelola.style.display = "none";
-                if(statusMode) {
-                    statusMode.innerText = "MODE: WARGA";
-                    statusMode.style.color = "#64748b";
-                }
-                if(btnLogout) btnLogout.style.display = "none";
+                menuKelola.style.display = "none";
+                statusMode.innerText = "MODE: WARGA";
+                statusMode.style.color = "#64748b";
+                btnLogout.style.display = "none";
             }
         }
 
@@ -497,31 +498,27 @@
             let htmlOut = "";
             let htmlManage = "";
 
-            // Atasi masalah konversi struktur data array kosong/object dari Firebase
-            const listTransaksi = Array.isArray(dataTransaksi) ? dataTransaksi : Object.values(dataTransaksi || {});
-
-            listTransaksi.forEach((item, index) => {
-                if (!item) return;
+            dataTransaksi.forEach((item, index) => {
                 const row = `<tr>
-                    <td style="font-size: 0.7rem; opacity: 0.8;">${item.tgl || ''}</td>
-                    <td>${item.ket || ''}</td>
+                    <td style="font-size: 0.7rem; opacity: 0.8;">${item.tgl}</td>
+                    <td>${item.ket}</td>
                     <td style="text-align:right; font-weight: 600; color:${item.tipe === 'masuk' ? 'var(--income)' : 'var(--expense)'}">
-                        ${(item.nominal || 0).toLocaleString('id-ID')}
+                        ${item.nominal.toLocaleString('id-ID')}
                     </td>
                 </tr>`;
                 
                 if(item.tipe === 'masuk') {
-                    tMasuk += (item.nominal || 0);
+                    tMasuk += item.nominal;
                     htmlIn += row;
                 } else {
-                    tKeluar += (item.nominal || 0);
+                    tKeluar += item.nominal;
                     htmlOut += row;
                 }
 
                 htmlManage += `<tr>
-                    <td style="font-size: 0.7rem;">${item.tgl || ''}</td>
-                    <td style="font-size: 0.75rem;">[${(item.tipe || '').toUpperCase()}] ${item.ket || ''}</td>
-                    <td style="text-align:right; font-weight:600;">${(item.nominal || 0).toLocaleString('id-ID')}</td>
+                    <td style="font-size: 0.7rem;">${item.tgl}</td>
+                    <td style="font-size: 0.75rem;">[${item.tipe.toUpperCase()}] ${item.ket}</td>
+                    <td style="text-align:right; font-weight:600;">${item.nominal.toLocaleString('id-ID')}</td>
                     <td style="text-align:center; white-space:nowrap;">
                         <button class="btn-edit" onclick="prepareEdit(${index})">Edit</button>
                         <button class="btn-delete" onclick="hapusTransaksi(${index})">Hapus</button>
@@ -530,29 +527,27 @@
             });
 
             const saldoAkhir = saldoAwal + tMasuk - tKeluar;
-            
-            // Pasang pengaman nilai elemen DOM jika dipanggil saat transisi atau inisiasi
-            if (document.getElementById('display-saldo')) document.getElementById('display-saldo').innerText = "Rp " + saldoAkhir.toLocaleString('id-ID');
-            if (document.getElementById('label-saldo-awal')) document.getElementById('label-saldo-awal').innerText = "Rp " + saldoAwal.toLocaleString('id-ID');
-            if (document.getElementById('total-masuk-hal')) document.getElementById('total-masuk-hal').innerText = "Rp " + tMasuk.toLocaleString('id-ID');
-            if (document.getElementById('total-keluar-hal')) document.getElementById('total-keluar-hal').innerText = "Rp " + tKeluar.toLocaleString('id-ID');
-            if (document.getElementById('table-pemasukan')) document.getElementById('table-pemasukan').innerHTML = htmlIn;
-            if (document.getElementById('table-pengeluaran')) document.getElementById('table-pengeluaran').innerHTML = htmlOut;
-            if (document.getElementById('table-kelola-data')) document.getElementById('table-kelola-data').innerHTML = htmlManage;
+            document.getElementById('display-saldo').innerText = "Rp " + saldoAkhir.toLocaleString('id-ID');
+            document.getElementById('label-saldo-awal').innerText = "Rp " + saldoAwal.toLocaleString('id-ID');
+            document.getElementById('total-masuk-hal').innerText = "Rp " + tMasuk.toLocaleString('id-ID');
+            document.getElementById('total-keluar-hal').innerText = "Rp " + tKeluar.toLocaleString('id-ID');
+            document.getElementById('table-pemasukan').innerHTML = htmlIn;
+            document.getElementById('table-pengeluaran').innerHTML = htmlOut;
+            document.getElementById('table-kelola-data').innerHTML = htmlManage;
 
             const totalAksi = tMasuk + tKeluar;
             if(totalAksi > 0) {
                 const pIn = (tMasuk / totalAksi * 100).toFixed(1);
                 const pOut = (tKeluar / totalAksi * 100).toFixed(1);
-                if (document.getElementById('bar-in')) document.getElementById('bar-in').style.height = pIn + "%";
-                if (document.getElementById('bar-out')) document.getElementById('bar-out').style.height = pOut + "%";
-                if (document.getElementById('pct-in')) document.getElementById('pct-in').innerText = pIn + "%";
-                if (document.getElementById('pct-out')) document.getElementById('pct-out').innerText = pOut + "%";
+                document.getElementById('bar-in').style.height = pIn + "%";
+                document.getElementById('bar-out').style.height = pOut + "%";
+                document.getElementById('pct-in').innerText = pIn + "%";
+                document.getElementById('pct-out').innerText = pOut + "%";
             } else {
-                if (document.getElementById('bar-in')) document.getElementById('bar-in').style.height = "0%";
-                if (document.getElementById('bar-out')) document.getElementById('bar-out').style.height = "0%";
-                if (document.getElementById('pct-in')) document.getElementById('pct-in').innerText = "0%";
-                if (document.getElementById('pct-out')) document.getElementById('pct-out').innerText = "0%";
+                document.getElementById('bar-in').style.height = "0%";
+                document.getElementById('bar-out').style.height = "0%";
+                document.getElementById('pct-in').innerText = "0%";
+                document.getElementById('pct-out').innerText = "0%";
             }
         }
 
@@ -561,12 +556,11 @@
         onValue(dataRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                // Pastikan format data selalu terbaca array murni di lokal script
-                dataTransaksi = Array.isArray(data) ? data : Object.values(data);
+                dataTransaksi = data;
                 localStorage.setItem('kas_rw013_data', JSON.stringify(dataTransaksi));
             } else {
+                // Jika database kosong (pertama kali), unggah defaultData ke Firebase
                 set(dataRef, defaultData);
-                dataTransaksi = defaultData;
             }
             initApp();
         });
@@ -589,8 +583,7 @@
             }
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const target = pageId === 'main' ? 'main-content' : 'halaman-' + pageId;
-            const element = document.getElementById(target);
-            if(element) element.classList.add('active');
+            document.getElementById(target).classList.add('active');
             window.scrollTo(0,0);
             resetForm();
         }
@@ -610,15 +603,15 @@
             }
 
             const dataObj = { tgl, ket, tipe, nominal };
-            let currentList = Array.isArray(dataTransaksi) ? [...dataTransaksi] : Object.values(dataTransaksi || {});
 
             if(index === "") {
-                currentList.push(dataObj);
+                dataTransaksi.push(dataObj);
             } else {
-                currentList[index] = dataObj;
+                dataTransaksi[index] = dataObj;
             }
 
-            set(dataRef, currentList)
+            // Simpan langsung ke cloud Firebase Realtime Database
+            set(dataRef, dataTransaksi)
                 .then(() => {
                     resetForm();
                     alert('Data transaksi berhasil disimpan ke server Cloud!');
@@ -629,10 +622,7 @@
         }
 
         window.prepareEdit = (index) => {
-            const currentList = Array.isArray(dataTransaksi) ? dataTransaksi : Object.values(dataTransaksi || {});
-            const item = currentList[index];
-            if(!item) return;
-
+            const item = dataTransaksi[index];
             document.getElementById('form-title').innerText = "Edit Transaksi Data";
             document.getElementById('tx-index').value = index;
             document.getElementById('tx-tgl').value = item.tgl;
@@ -647,10 +637,8 @@
 
         window.hapusTransaksi = (index) => {
             if(confirm('Apakah Anda yakin ingin menghapus data transaksi ini?')) {
-                let currentList = Array.isArray(dataTransaksi) ? [...dataTransaksi] : Object.values(dataTransaksi || {});
-                currentList.splice(index, 1);
-                
-                set(dataRef, currentList)
+                dataTransaksi.splice(index, 1);
+                set(dataRef, dataTransaksi)
                     .then(() => {
                         resetForm();
                         alert('Data berhasil dihapus dari server cloud.');
@@ -659,14 +647,14 @@
         }
 
         function resetForm() {
-            if(document.getElementById('form-title')) document.getElementById('form-title').innerText = "Tambah Transaksi Baru";
-            if(document.getElementById('tx-index')) document.getElementById('tx-index').value = "";
-            if(document.getElementById('tx-tgl')) document.getElementById('tx-tgl').value = "";
-            if(document.getElementById('tx-ket')) document.getElementById('tx-ket').value = "";
-            if(document.getElementById('tx-nominal')) document.getElementById('tx-nominal').value = "";
-            if(document.getElementById('tx-tipe')) document.getElementById('tx-tipe').value = "masuk";
-            if(document.getElementById('btn-save')) document.getElementById('btn-save').innerText = "Simpan Transaksi";
-            if(document.getElementById('btn-cancel')) document.getElementById('btn-cancel').style.display = "none";
+            document.getElementById('form-title').innerText = "Tambah Transaksi Baru";
+            document.getElementById('tx-index').value = "";
+            document.getElementById('tx-tgl').value = "";
+            document.getElementById('tx-ket').value = "";
+            document.getElementById('tx-nominal').value = "";
+            document.getElementById('tx-tipe').value = "masuk";
+            document.getElementById('btn-save').innerText = "Simpan Transaksi";
+            document.getElementById('btn-cancel').style.display = "none";
         }
     </script>
 </body>
