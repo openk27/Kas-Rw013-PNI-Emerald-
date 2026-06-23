@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kas PNI RW 013 - 3D Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght=300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-neon: #00f2ff;
@@ -144,14 +144,13 @@
         .container { max-width: 1000px; margin: auto; padding: 40px 20px; width: 100%; padding-bottom: 120px; }
         header { text-align: center; margin-bottom: 30px; }
         .dashboard-perspective { perspective: 1500px; margin-bottom: 40px; }
-        .dashboard-card-3d { background: #0f172a; position: relative; border-radius: 25px; padding: 35px 20px; text-align: center; transform: rotateX(15deg); animation: float 6s ease-in-out infinite; box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; z-index: 1; max-width: 500px; margin: 0 auto; cursor: pointer; }
+        .dashboard-card-3d { background: #0f172a; position: relative; border-radius: 25px; padding: 35px 20px; text-align: center; transform: rotateX(15deg); animation: float 6s ease-in-out infinite; box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; z-index: 1; max-width: 500px; margin: 0 auto; }
         .dashboard-card-3d::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, transparent, var(--primary-neon)); animation: rotate-light 4s linear infinite; z-index: -2; }
         .dashboard-card-3d::after { content: ""; position: absolute; inset: 2px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)); border-radius: 23px; z-index: -1; }
         @keyframes rotate-light { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes float { 0%, 100% { transform: translateY(0px) rotateX(15deg); } 50% { transform: translateY(-12px) rotateX(15deg); } }
         .saldo-amount { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; text-shadow: 0 0 20px var(--primary-neon); position: relative; z-index: 2; }
         
-        /* Layout Grid Fleksibel Otomatis */
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; perspective: 1200px; }
         .menu-card-3d { background: #16213e; height: 120px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.2s ease; box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.8), inset -6px -6px 12px rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 0, 0, 0.3); padding: 5px; }
         .menu-card-3d:active { transform: scale(0.98) translateY(2px); background: #1f2d5a; box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.6), 0px 0px 15px rgba(0, 242, 255, 0.3); border-color: var(--primary-neon); }
@@ -172,13 +171,11 @@
         .sig-box { text-align: center; font-size: 0.6rem; flex: 1; }
         .sig-name { color: var(--primary-neon); font-weight: 600; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 5px; white-space: nowrap; }
 
-        /* Gaya Khusus Ukuran Teks Ringkasan Total Halaman */
         .page-total-summary { font-size: 1.05rem; opacity: 0.85; margin-bottom: 20px; letter-spacing: 0.5px; }
         .page-total-summary .amount { font-size: clamp(1.4rem, 5vw, 1.9rem); font-weight: 800; display: block; margin-top: 5px; }
         .page-total-summary .amount.in { color: var(--income); text-shadow: 0 0 15px rgba(74, 222, 128, 0.4); }
         .page-total-summary .amount.out { color: var(--expense); text-shadow: 0 0 15px rgba(248, 113, 113, 0.4); }
 
-        /* Form Kelola Data Styles */
         .form-container { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(0, 242, 255, 0.2); margin-bottom: 25px; }
         .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
         .form-group label { font-size: 0.75rem; color: var(--primary-neon); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
@@ -189,7 +186,6 @@
         .btn-edit { background: #eab308; color: black; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: bold; margin-right: 5px; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: bold; }
 
-        /* Tombol keluar dari Mode Admin */
         .btn-logout { background: transparent; border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-size: 0.6rem; padding: 4px 10px; border-radius: 15px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .btn-logout:hover { background: #ef4444; color: white; }
 
@@ -332,16 +328,6 @@
         <button class="btn-back" onclick="showPage('main')">← KEMBALI</button>
         <h2 style="margin-bottom: 20px; color: #eab308;">Kelola Data Kas</h2>
         
-        <!-- Form Update Saldo Awal -->
-        <div class="form-container" style="border-color: #eab308; margin-bottom: 35px;">
-            <h3 style="margin-bottom: 15px; font-size: 1rem; color: #eab308;">Pengaturan Saldo Awal</h3>
-            <div class="form-group">
-                <label>Nominal Saldo Awal (Rp)</label>
-                <input type="number" id="input-saldo-awal" placeholder="Contoh: 1000000">
-            </div>
-            <button type="button" class="btn-submit" style="background: #eab308; color: black;" onclick="simpanSaldoAwal()">Update Saldo Awal</button>
-        </div>
-
         <div class="form-container">
             <h3 id="form-title" style="margin-bottom: 15px; font-size: 1rem;">Tambah Transaksi Baru</h3>
             <input type="hidden" id="tx-index" value="">
@@ -407,6 +393,7 @@
     <!-- Firebase SDK (Modular v9) via CDN -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
         // Konfigurasi Firebase
@@ -422,10 +409,11 @@
 
         // Inisialisasi Firebase
         const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const db = getDatabase(app);
 
         // Variabel Global Sistem
-        let saldoAwalGlobal = 0; 
+        const saldoAwal = 0; 
         const PIN_ADMIN = "Rw013"; 
         let klikHeaderCount = 0;
         let klikHeaderTimer;
@@ -444,7 +432,6 @@
 
         let dataTransaksi = JSON.parse(localStorage.getItem('kas_rw013_data')) || defaultData;
 
-        // Hubungkan fungsi ke window agar dapat dipanggil dari elemen HTML onclick
         window.bukaGoogleDrive = () => {
             window.open("https://drive.google.com/drive/folders/1wPSnp3hTXV2NeDf2k9m4VcN9_rtzDdYf", "_blank");
         }
@@ -477,15 +464,19 @@
             const btnLogout = document.getElementById('btn-logout-admin');
 
             if (isAdmin) {
-                menuKelola.style.display = "flex";
-                statusMode.innerText = "MODE: ADMIN (ROHMAN / FIRMANSAH)";
-                statusMode.style.color = "#eab308";
-                btnLogout.style.display = "inline-block";
+                if(menuKelola) menuKelola.style.display = "flex";
+                if(statusMode) {
+                    statusMode.innerText = "MODE: ADMIN (ROHMAN / FIRMANSAH)";
+                    statusMode.style.color = "#eab308";
+                }
+                if(btnLogout) btnLogout.style.display = "inline-block";
             } else {
-                menuKelola.style.display = "none";
-                statusMode.innerText = "MODE: WARGA";
-                statusMode.style.color = "#64748b";
-                btnLogout.style.display = "none";
+                if(menuKelola) menuKelola.style.display = "none";
+                if(statusMode) {
+                    statusMode.innerText = "MODE: WARGA";
+                    statusMode.style.color = "#64748b";
+                }
+                if(btnLogout) btnLogout.style.display = "none";
             }
         }
 
@@ -498,7 +489,7 @@
             }
         }
 
-        function renderDataDashboard() {
+        function initApp() {
             cekStatusAkses();
             let tMasuk = 0;
             let tKeluar = 0;
@@ -506,27 +497,31 @@
             let htmlOut = "";
             let htmlManage = "";
 
-            dataTransaksi.forEach((item, index) => {
+            // Atasi masalah konversi struktur data array kosong/object dari Firebase
+            const listTransaksi = Array.isArray(dataTransaksi) ? dataTransaksi : Object.values(dataTransaksi || {});
+
+            listTransaksi.forEach((item, index) => {
+                if (!item) return;
                 const row = `<tr>
-                    <td style="font-size: 0.7rem; opacity: 0.8;">${item.tgl}</td>
-                    <td>${item.ket}</td>
+                    <td style="font-size: 0.7rem; opacity: 0.8;">${item.tgl || ''}</td>
+                    <td>${item.ket || ''}</td>
                     <td style="text-align:right; font-weight: 600; color:${item.tipe === 'masuk' ? 'var(--income)' : 'var(--expense)'}">
-                        ${item.nominal.toLocaleString('id-ID')}
+                        ${(item.nominal || 0).toLocaleString('id-ID')}
                     </td>
                 </tr>`;
                 
                 if(item.tipe === 'masuk') {
-                    tMasuk += item.nominal;
+                    tMasuk += (item.nominal || 0);
                     htmlIn += row;
                 } else {
-                    tKeluar += item.nominal;
+                    tKeluar += (item.nominal || 0);
                     htmlOut += row;
                 }
 
                 htmlManage += `<tr>
-                    <td style="font-size: 0.7rem;">${item.tgl}</td>
-                    <td style="font-size: 0.75rem;">[${item.tipe.toUpperCase()}] ${item.ket}</td>
-                    <td style="text-align:right; font-weight:600;">${item.nominal.toLocaleString('id-ID')}</td>
+                    <td style="font-size: 0.7rem;">${item.tgl || ''}</td>
+                    <td style="font-size: 0.75rem;">[${(item.tipe || '').toUpperCase()}] ${item.ket || ''}</td>
+                    <td style="text-align:right; font-weight:600;">${(item.nominal || 0).toLocaleString('id-ID')}</td>
                     <td style="text-align:center; white-space:nowrap;">
                         <button class="btn-edit" onclick="prepareEdit(${index})">Edit</button>
                         <button class="btn-delete" onclick="hapusTransaksi(${index})">Hapus</button>
@@ -534,59 +529,50 @@
                 </tr>`;
             });
 
-            const saldoAkhir = saldoAwalGlobal + tMasuk - tKeluar;
-            document.getElementById('display-saldo').innerText = "Rp " + saldoAkhir.toLocaleString('id-ID');
-            document.getElementById('label-saldo-awal').innerText = "Rp " + saldoAwalGlobal.toLocaleString('id-ID');
-            document.getElementById('total-masuk-hal').innerText = "Rp " + tMasuk.toLocaleString('id-ID');
-            document.getElementById('total-keluar-hal').innerText = "Rp " + tKeluar.toLocaleString('id-ID');
-            document.getElementById('table-pemasukan').innerHTML = htmlIn;
-            document.getElementById('table-pengeluaran').innerHTML = htmlOut;
-            document.getElementById('table-kelola-data').innerHTML = htmlManage;
+            const saldoAkhir = saldoAwal + tMasuk - tKeluar;
+            
+            // Pasang pengaman nilai elemen DOM jika dipanggil saat transisi atau inisiasi
+            if (document.getElementById('display-saldo')) document.getElementById('display-saldo').innerText = "Rp " + saldoAkhir.toLocaleString('id-ID');
+            if (document.getElementById('label-saldo-awal')) document.getElementById('label-saldo-awal').innerText = "Rp " + saldoAwal.toLocaleString('id-ID');
+            if (document.getElementById('total-masuk-hal')) document.getElementById('total-masuk-hal').innerText = "Rp " + tMasuk.toLocaleString('id-ID');
+            if (document.getElementById('total-keluar-hal')) document.getElementById('total-keluar-hal').innerText = "Rp " + tKeluar.toLocaleString('id-ID');
+            if (document.getElementById('table-pemasukan')) document.getElementById('table-pemasukan').innerHTML = htmlIn;
+            if (document.getElementById('table-pengeluaran')) document.getElementById('table-pengeluaran').innerHTML = htmlOut;
+            if (document.getElementById('table-kelola-data')) document.getElementById('table-kelola-data').innerHTML = htmlManage;
 
             const totalAksi = tMasuk + tKeluar;
             if(totalAksi > 0) {
                 const pIn = (tMasuk / totalAksi * 100).toFixed(1);
                 const pOut = (tKeluar / totalAksi * 100).toFixed(1);
-                document.getElementById('bar-in').style.height = pIn + "%";
-                document.getElementById('bar-out').style.height = pOut + "%";
-                document.getElementById('pct-in').innerText = pIn + "%";
-                document.getElementById('pct-out').innerText = pOut + "%";
+                if (document.getElementById('bar-in')) document.getElementById('bar-in').style.height = pIn + "%";
+                if (document.getElementById('bar-out')) document.getElementById('bar-out').style.height = pOut + "%";
+                if (document.getElementById('pct-in')) document.getElementById('pct-in').innerText = pIn + "%";
+                if (document.getElementById('pct-out')) document.getElementById('pct-out').innerText = pOut + "%";
             } else {
-                document.getElementById('bar-in').style.height = "0%";
-                document.getElementById('bar-out').style.height = "0%";
-                document.getElementById('pct-in').innerText = "0%";
-                document.getElementById('pct-out').innerText = "0%";
+                if (document.getElementById('bar-in')) document.getElementById('bar-in').style.height = "0%";
+                if (document.getElementById('bar-out')) document.getElementById('bar-out').style.height = "0%";
+                if (document.getElementById('pct-in')) document.getElementById('pct-in').innerText = "0%";
+                if (document.getElementById('pct-out')) document.getElementById('pct-out').innerText = "0%";
             }
         }
 
-        // Sinkronisasi Real-Time Transaksi dari Firebase Cloud
+        // Sinkronisasi Data dari Firebase Realtime Database
         const dataRef = ref(db, 'transaksi');
         onValue(dataRef, (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                dataTransaksi = data;
+                // Pastikan format data selalu terbaca array murni di lokal script
+                dataTransaksi = Array.isArray(data) ? data : Object.values(data);
                 localStorage.setItem('kas_rw013_data', JSON.stringify(dataTransaksi));
             } else {
                 set(dataRef, defaultData);
+                dataTransaksi = defaultData;
             }
-            renderDataDashboard();
-        });
-
-        // Sinkronisasi Real-Time Saldo Awal dari Firebase Cloud
-        const saldoAwalRef = ref(db, 'saldo_awal');
-        onValue(saldoAwalRef, (snapshot) => {
-            const val = snapshot.val();
-            if (val !== null) {
-                saldoAwalGlobal = parseInt(val);
-                document.getElementById('input-saldo-awal').value = saldoAwalGlobal;
-            } else {
-                set(saldoAwalRef, 0);
-            }
-            renderDataDashboard();
+            initApp();
         });
 
         window.onload = () => {
-            renderDataDashboard();
+            initApp();
             setTimeout(() => {
                 const loader = document.getElementById('loading-screen');
                 if(loader) {
@@ -603,27 +589,13 @@
             }
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const target = pageId === 'main' ? 'main-content' : 'halaman-' + pageId;
-            document.getElementById(target).classList.add('active');
+            const element = document.getElementById(target);
+            if(element) element.classList.add('active');
             window.scrollTo(0,0);
             resetForm();
         }
 
-        /* --- MANAJEMEN DATA INTEGRASI FIREBASE REALTIME --- */
-
-        window.simpanSaldoAwal = () => {
-            const nominalAwal = parseInt(document.getElementById('input-saldo-awal').value);
-            if (isNaN(nominalAwal)) {
-                alert('Masukkan angka nominal saldo awal yang valid!');
-                return;
-            }
-            set(saldoAwalRef, nominalAwal)
-                .then(() => {
-                    alert('Saldo awal berhasil diperbarui secara permanen dan instan ke seluruh warga!');
-                })
-                .catch((err) => {
-                    alert('Gagal memperbarui saldo awal: ' + err.message);
-                });
-        }
+        /* --- MANAJEMEN DATA INTEGRASI FIREBASE --- */
 
         window.simpanTransaksi = () => {
             const tgl = document.getElementById('tx-tgl').value.trim();
@@ -638,17 +610,18 @@
             }
 
             const dataObj = { tgl, ket, tipe, nominal };
+            let currentList = Array.isArray(dataTransaksi) ? [...dataTransaksi] : Object.values(dataTransaksi || {});
 
             if(index === "") {
-                dataTransaksi.push(dataObj);
+                currentList.push(dataObj);
             } else {
-                dataTransaksi[index] = dataObj;
+                currentList[index] = dataObj;
             }
 
-            set(dataRef, dataTransaksi)
+            set(dataRef, currentList)
                 .then(() => {
                     resetForm();
-                    alert('Data transaksi berhasil disimpan ke server Cloud dan otomatis terupdate di browser warga!');
+                    alert('Data transaksi berhasil disimpan ke server Cloud!');
                 })
                 .catch((error) => {
                     alert('Gagal menyinkronkan data: ' + error.message);
@@ -656,7 +629,10 @@
         }
 
         window.prepareEdit = (index) => {
-            const item = dataTransaksi[index];
+            const currentList = Array.isArray(dataTransaksi) ? dataTransaksi : Object.values(dataTransaksi || {});
+            const item = currentList[index];
+            if(!item) return;
+
             document.getElementById('form-title').innerText = "Edit Transaksi Data";
             document.getElementById('tx-index').value = index;
             document.getElementById('tx-tgl').value = item.tgl;
@@ -671,24 +647,26 @@
 
         window.hapusTransaksi = (index) => {
             if(confirm('Apakah Anda yakin ingin menghapus data transaksi ini?')) {
-                dataTransaksi.splice(index, 1);
-                set(dataRef, dataTransaksi)
+                let currentList = Array.isArray(dataTransaksi) ? [...dataTransaksi] : Object.values(dataTransaksi || {});
+                currentList.splice(index, 1);
+                
+                set(dataRef, currentList)
                     .then(() => {
                         resetForm();
-                        alert('Data berhasil dihapus dari cloud dan layar warga.');
+                        alert('Data berhasil dihapus dari server cloud.');
                     });
             }
         }
 
         function resetForm() {
-            document.getElementById('form-title').innerText = "Tambah Transaksi Baru";
-            document.getElementById('tx-index').value = "";
-            document.getElementById('tx-tgl').value = "";
-            document.getElementById('tx-ket').value = "";
-            document.getElementById('tx-nominal').value = "";
-            document.getElementById('tx-tipe').value = "masuk";
-            document.getElementById('btn-save').innerText = "Simpan Transaksi";
-            document.getElementById('btn-cancel').style.display = "none";
+            if(document.getElementById('form-title')) document.getElementById('form-title').innerText = "Tambah Transaksi Baru";
+            if(document.getElementById('tx-index')) document.getElementById('tx-index').value = "";
+            if(document.getElementById('tx-tgl')) document.getElementById('tx-tgl').value = "";
+            if(document.getElementById('tx-ket')) document.getElementById('tx-ket').value = "";
+            if(document.getElementById('tx-nominal')) document.getElementById('tx-nominal').value = "";
+            if(document.getElementById('tx-tipe')) document.getElementById('tx-tipe').value = "masuk";
+            if(document.getElementById('btn-save')) document.getElementById('btn-save').innerText = "Simpan Transaksi";
+            if(document.getElementById('btn-cancel')) document.getElementById('btn-cancel').style.display = "none";
         }
     </script>
 </body>
