@@ -1,10 +1,13 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kas PNI RW 013 - 3D Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Load Firebase SDK Core & Realtime Database via CDN -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root {
             --primary-neon: #00f2ff;
@@ -401,23 +404,23 @@
         let klikHeaderCount = 0;
         let klikHeaderTimer;
 
-        const defaultData = [
-            { tgl: "04 April 2026", ket: "Kontribusi lingkungan NBN (nuansa Berkah Net)<br> 3 bulan <li>Januari <li>Februari <li>Maret", tipe: "masuk", nominal: 1950000 },
-            { tgl: "5 April 2026", ket: "Kontribusi lingkungan ID net, <br>  <li> bulan maret ", tipe: "masuk", nominal: 680000 },
-            { tgl: "20 Juni 2026", ket: "Kontribusi lingkungan SBN (Surya Berkah Nusantara)<br> 3 bulan <li>Januari <li>Februari <li>Maret", tipe: "masuk", nominal: 420000 },
-            { tgl: "20 Juni 2026", ket: "Kontribusi lingkungan SBN (Surya Berkah Nusantara)<br> 4 bulan thn 2025 <li>September <li>Oktober <li>Nopember <li>Desember ", tipe: "masuk", nominal: 560000 },
-            { tgl: "10 Mei 2026", ket: "Komsumsi rapat pengurus Rw 013", tipe: "keluar", nominal: 80000 },
-            { tgl: "15 Mei 2026", ket: "Perbaikan sarana prasarana / sport center <br>Rincian: <li>Pasir setengah colt = Rp.300,000 <li>Semen 4 sak = Rp 200.000, <li> Biaya admin Tranfer Dari bendaha ke pak waluyo = Rp. 2.500 ", tipe: "keluar", nominal: 502500 },
-            { tgl: "16 Mei 2026", ket: "Kegiatan Posyandu", tipe: "keluar", nominal: 200000 },
-            { tgl: "15 Juni 2026", ket: "Kegiatan Posyandu", tipe: "keluar", nominal: 200000 },
-            { tgl: "21 Juni 2026", ket: "Pengecatan Ban ibu - ibu PKK / Bak sampah <br>Rincian: <li>Cat minyak Alvian 3 kaleng = Rp.270,000 <li>Kuas 2 inch = Rp 20.000, <li> Thener 1 botol = Rp. 15.000 ", tipe: "keluar", nominal: 305000 }
-        ];
+        // --- KONFIGURASI FIREBASE ---
+        // Ganti objek di bawah ini dengan kredensial dari akun Firebase Anda sendiri
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsYourAPIKeyHere_Placeholder",
+            authDomain: "kas-rw013.firebaseapp.com",
+            databaseURL: "https://kas-rw013-default-rtdb.firebaseio.com/",
+            projectId: "kas-rw013",
+            storageBucket: "kas-rw013.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abcdef123456"
+        };
+        
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-        let dataTransaksi = JSON.parse(localStorage.getItem('kas_rw013_data')) || defaultData;
-
-        function saveToStorage() {
-            localStorage.setItem('kas_rw013_data', JSON.stringify(dataTransaksi));
-        }
+        let dataTransaksi = [];
 
         function bukaGoogleDrive() {
             window.open("https://drive.google.com/drive/folders/1wPSnp3hTXV2NeDf2k9m4VcN9_rtzDdYf", "_blank");
@@ -472,8 +475,17 @@
             }
         }
 
-        function initApp() {
-            cekStatusAkses();
+        // --- FUNGSI UTAMA SINKRONISASI REAL-TIME ---
+        // Fungsi ini mendengarkan perubahan data langsung dari server cloud Firebase
+        function listenToDatabase() {
+            database.ref('transaksi').on('value', (snapshot) => {
+                const data = snapshot.val();
+                dataTransaksi = data ? data : [];
+                renderData();
+            });
+        }
+
+        function renderData() {
             let tMasuk = 0;
             let tKeluar = 0;
             let htmlIn = "";
@@ -481,6 +493,8 @@
             let htmlManage = "";
 
             dataTransaksi.forEach((item, index) => {
+                if(!item) return; // Mengatasi data kosong akibat index yang terhapus
+
                 const row = `<tr>
                     <td style="font-size: 0.7rem; opacity: 0.8;">${item.tgl}</td>
                     <td>${item.ket}</td>
@@ -534,7 +548,9 @@
         }
 
         window.onload = () => {
-            initApp();
+            cekStatusAkses();
+            listenToDatabase(); // Jalankan pemantauan database online
+            
             setTimeout(() => {
                 const loader = document.getElementById('loading-screen');
                 if(loader) {
@@ -556,7 +572,7 @@
             resetForm();
         }
 
-        /* --- FUNGSI ENGINE MANAJEMEN DATA --- */
+        /* --- ENGINE MANAJEMEN DATA ONLINE --- */
 
         function simpanTransaksi() {
             const tgl = document.getElementById('tx-tgl').value.trim();
@@ -578,10 +594,15 @@
                 dataTransaksi[index] = dataObj;
             }
 
-            saveToStorage();
-            initApp();
-            resetForm();
-            alert('Data transaksi berhasil disimpan!');
+            // Simpan langsung ke awan (Firebase Cloud)
+            database.ref('transaksi').set(dataTransaksi, (error) => {
+                if (error) {
+                    alert('Gagal menyimpan ke server online: ' + error.message);
+                } else {
+                    resetForm();
+                    alert('Data transaksi berhasil diperbarui secara online!');
+                }
+            });
         }
 
         function prepareEdit(index) {
@@ -601,9 +622,15 @@
         function hapusTransaksi(index) {
             if(confirm('Apakah Anda yakin ingin menghapus data transaksi ini?')) {
                 dataTransaksi.splice(index, 1);
-                saveToStorage();
-                initApp();
-                resetForm();
+                
+                database.ref('transaksi').set(dataTransaksi, (error) => {
+                    if (error) {
+                        alert('Gagal menghapus data di server: ' + error.message);
+                    } else {
+                        resetForm();
+                        alert('Data berhasil dihapus dari cloud!');
+                    }
+                });
             }
         }
 
