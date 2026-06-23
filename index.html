@@ -394,10 +394,31 @@
         </div>
     </div>
 
-    <script>
+    <!-- Firebase SDK (Modular v9) via CDN -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCjMKdL6aWdQdreEC9b2DnqMMF-C_chptQ",
+            authDomain: "kas-rw013.firebaseapp.com",
+            projectId: "kas-rw013",
+            storageBucket: "kas-rw013.firebasestorage.app",
+            messagingSenderId: "905721130555",
+            appId: "1:905721130555:web:70154a7fa3df884387361e",
+            measurementId: "G-9568NWSVZ6"
+        };
+
+        // Inisialisasi Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+
+        // Variabel Global Sistem
         const saldoAwal = 0; 
         const PIN_ADMIN = "Rw013"; 
-        
         let klikHeaderCount = 0;
         let klikHeaderTimer;
 
@@ -415,15 +436,12 @@
 
         let dataTransaksi = JSON.parse(localStorage.getItem('kas_rw013_data')) || defaultData;
 
-        function saveToStorage() {
-            localStorage.setItem('kas_rw013_data', JSON.stringify(dataTransaksi));
-        }
-
-        function bukaGoogleDrive() {
+        // Hubungkan fungsi ke window agar dapat dipanggil dari elemen HTML onclick
+        window.bukaGoogleDrive = () => {
             window.open("https://drive.google.com/drive/folders/1wPSnp3hTXV2NeDf2k9m4VcN9_rtzDdYf", "_blank");
         }
 
-        function aksesAdminRahasia() {
+        window.aksesAdminRahasia = () => {
             klikHeaderCount++;
             clearTimeout(klikHeaderTimer);
             
@@ -463,12 +481,12 @@
             }
         }
 
-        function logoutAdmin(event) {
+        window.logoutAdmin = (event) => {
             event.stopPropagation();
             if(confirm("Keluar dari Mode Kontrol Admin?")) {
                 sessionStorage.removeItem('is_admin_rw013');
                 cekStatusAkses();
-                showPage('main');
+                window.showPage('main');
             }
         }
 
@@ -533,6 +551,20 @@
             }
         }
 
+        // Sinkronisasi Data dari Firebase Realtime Database
+        const dataRef = ref(db, 'transaksi');
+        onValue(dataRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                dataTransaksi = data;
+                localStorage.setItem('kas_rw013_data', JSON.stringify(dataTransaksi));
+            } else {
+                // Jika database kosong (pertama kali), unggah defaultData ke Firebase
+                set(dataRef, defaultData);
+            }
+            initApp();
+        });
+
         window.onload = () => {
             initApp();
             setTimeout(() => {
@@ -544,7 +576,7 @@
             }, 2500);
         };
 
-        function showPage(pageId) {
+        window.showPage = (pageId) => {
             if (pageId === 'kelola' && sessionStorage.getItem('is_admin_rw013') !== 'true') {
                 alert("Akses Ilegal! Anda bukan Admin.");
                 return;
@@ -556,9 +588,9 @@
             resetForm();
         }
 
-        /* --- FUNGSI ENGINE MANAJEMEN DATA --- */
+        /* --- MANAJEMEN DATA INTEGRASI FIREBASE --- */
 
-        function simpanTransaksi() {
+        window.simpanTransaksi = () => {
             const tgl = document.getElementById('tx-tgl').value.trim();
             const tipe = document.getElementById('tx-tipe').value;
             const ket = document.getElementById('tx-ket').value.trim();
@@ -578,13 +610,18 @@
                 dataTransaksi[index] = dataObj;
             }
 
-            saveToStorage();
-            initApp();
-            resetForm();
-            alert('Data transaksi berhasil disimpan!');
+            // Simpan langsung ke cloud Firebase Realtime Database
+            set(dataRef, dataTransaksi)
+                .then(() => {
+                    resetForm();
+                    alert('Data transaksi berhasil disimpan ke server Cloud!');
+                })
+                .catch((error) => {
+                    alert('Gagal menyinkronkan data: ' + error.message);
+                });
         }
 
-        function prepareEdit(index) {
+        window.prepareEdit = (index) => {
             const item = dataTransaksi[index];
             document.getElementById('form-title').innerText = "Edit Transaksi Data";
             document.getElementById('tx-index').value = index;
@@ -595,15 +632,17 @@
             
             document.getElementById('btn-save').innerText = "Simpan Perubahan";
             document.getElementById('btn-cancel').style.display = "block";
-            window.scrollTo(0,0);
+            window.showPage('kelola');
         }
 
-        function hapusTransaksi(index) {
+        window.hapusTransaksi = (index) => {
             if(confirm('Apakah Anda yakin ingin menghapus data transaksi ini?')) {
                 dataTransaksi.splice(index, 1);
-                saveToStorage();
-                initApp();
-                resetForm();
+                set(dataRef, dataTransaksi)
+                    .then(() => {
+                        resetForm();
+                        alert('Data berhasil dihapus dari server cloud.');
+                    });
             }
         }
 
@@ -620,4 +659,3 @@
     </script>
 </body>
 </html>
-
