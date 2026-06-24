@@ -218,7 +218,7 @@
     </div>
 
     <div class="marquee-container">
-        <marquee id="marquee-text" scrollamount="7">Laporan Keuangan Rukun Warga 013 - PNIC BLOK EMERALD THN 2026 </marquee>
+        <marquee id="marquee-text" scrollamount="7">Laporan Keuangan Rukun Warga 013 - PNIC BLOK EMERALD THN 2026</marquee>
     </div>
 
     <div class="container page active" id="main-content">
@@ -326,23 +326,21 @@
 
     <div class="container page" id="halaman-kelola">
         <button class="btn-back" onclick="showPage('main')">← KEMBALI</button>
-        <h2 style="margin-bottom: 20px; color: #eab308;">Kelola Data Kas & Pengaturan</h2>
+        <h2 style="margin-bottom: 20px; color: #eab308;">Kelola Data Kas & Global Setting</h2>
         
-        <!-- PENGATURAN KAS UMUM -->
-        <div class="form-container" style="border-color: #eab308; margin-bottom: 35px;">
-            <h3 style="margin-bottom: 15px; font-size: 1rem; color: #eab308;">Pengaturan Umum (Saldo & Teks)</h3>
+        <div class="form-container" style="border-color: #eab308; margin-bottom: 30px;">
+            <h3 style="margin-bottom: 15px; font-size: 1rem; color: #eab308;">Pengaturan Umum (Cloud)</h3>
             <div class="form-group">
-                <label>Saldo Awal Kas (Rp)</label>
-                <input type="number" id="cfg-saldo-awal" placeholder="Contoh: 1500000">
+                <label>Saldo Awal Pembukaan (Rp)</label>
+                <input type="number" id="cfg-saldo-awal" placeholder="Contoh: 2500000" required>
             </div>
             <div class="form-group">
-                <label>Teks Berjalan (Marquee)</label>
-                <textarea id="cfg-marquee" rows="2" placeholder="Masukkan pengumuman teks berjalan..."></textarea>
+                <label>Teks Berjalan Utama (Marquee)</label>
+                <textarea id="cfg-marquee" rows="2" placeholder="Tulis info / pengumuman penting di sini..." required></textarea>
             </div>
-            <button type="button" class="btn-submit" style="background: #eab308;" onclick="simpanKonfigurasi()">Update Pengaturan Umum</button>
+            <button type="button" class="btn-submit" style="background:#eab308; color:#000;" onclick="simpanConfigGlobal()">Simpan Pengaturan Utama ke Server</button>
         </div>
 
-        <!-- FORM TRANSAKSI -->
         <div class="form-container">
             <h3 id="form-title" style="margin-bottom: 15px; font-size: 1rem;">Tambah Transaksi Baru</h3>
             <input type="hidden" id="tx-index" value="">
@@ -413,7 +411,7 @@
         let klikHeaderTimer;
         let dataTransaksi = [];
 
-        // GANTI DENGAN URL GOOGLE APPS SCRIPT ANDA
+        // URL GOOGLE APPS SCRIPT ANDA
         const API_URL = "https://script.google.com/macros/s/AKfycbz9RVzholtcVlG0y1U_glQFWIb4tcswmrtbCc9BgOj0v8kp3q4YDm4jh_t8g6njb4ec/exec"; 
 
         window.bukaGoogleDrive = () => {
@@ -482,7 +480,7 @@
         function initApp() {
             cekStatusAkses();
             
-            // Set data teks marquee global
+            // Render text marquee dan isi form setup global
             document.getElementById('marquee-text').innerText = teksMarquee;
             document.getElementById('cfg-marquee').value = teksMarquee;
             document.getElementById('cfg-saldo-awal').value = saldoAwal;
@@ -551,10 +549,10 @@
             fetch(API_URL)
             .then(response => response.json())
             .then(res => {
-                // Mendukung jika backend Anda mengembalikan object atau array langsung
+                // Membaca bundle data dari Apps Script terbaru
                 if (res && res.dataTransaksi) {
                     dataTransaksi = res.dataTransaksi || [];
-                    saldoAwal = res.saldoAwal || 0;
+                    saldoAwal = Number(res.saldoAwal) || 0;
                     teksMarquee = res.teksMarquee || teksMarquee;
                 } else {
                     dataTransaksi = res || [];
@@ -563,10 +561,7 @@
                 hilangkanLoader();
             })
             .catch(err => {
-                console.error("Gagal memuat data:", err);
-                dataTransaksi = [
-                    {tgl: "01 Jan 2026", tipe: "masuk", ket: "Gagal koneksi ke server / Gunakan Data Lokal", nominal: 0}
-                ];
+                console.error("Gagal memuat data dari database cloud:", err);
                 initApp();
                 setTimeout(hilangkanLoader, 1000);
             });
@@ -574,7 +569,7 @@
 
         window.prepareEdit = (index) => {
             const item = dataTransaksi[index];
-            document.getElementById('form-title').innerText = "Edit Transaksi";
+            document.getElementById('form-title').innerText = "Edit Transaksi Exist";
             document.getElementById('tx-index').value = index;
             document.getElementById('tx-tgl').value = item.tgl;
             document.getElementById('tx-tipe').value = item.tipe;
@@ -582,8 +577,6 @@
             document.getElementById('tx-nominal').value = item.nominal;
             document.getElementById('btn-save').innerText = "Simpan Perubahan";
             document.getElementById('btn-cancel').style.display = "inline-block";
-            
-            // Scroll otomatis ke area form agar mudah dijangkau admin
             document.getElementById('form-title').scrollIntoView({ behavior: 'smooth' });
         }
 
@@ -595,7 +588,7 @@
             const index = document.getElementById('tx-index').value;
 
             if(!tgl || !ket || isNaN(nominal)) {
-                alert('Mohon isi semua form input dengan benar!');
+                alert('Mohon isi formulir dengan benar!');
                 return;
             }
 
@@ -607,84 +600,73 @@
                 dataTerbaru[index] = dataObj;
             }
 
-            // Memaketkan data beserta konfigurasi global untuk dikirim ke sheet
-            const payload = { 
-                aksi: "simpan", 
-                data: dataTerbaru,
-                saldoAwal: saldoAwal,
-                teksMarquee: teksMarquee
-            };
-
+            // Kirim paket data lengkap ke server cloud agar sinkron ke semua orang
             fetch(API_URL, {
                 method: "POST",
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ 
+                    aksi: "simpan_semua", 
+                    data: dataTerbaru,
+                    saldoAwal: saldoAwal,
+                    teksMarquee: teksMarquee
+                })
             })
             .then(res => res.json())
             .then(respon => {
                 resetForm();
-                alert('Data transaksi berhasil disimpan!');
+                alert('Data Transaksi berhasil disinkronisasikan ke Server Cloud!');
                 muatDataDariSheets();
             })
-            .catch(err => alert("Gagal menyimpan data ke server."));
+            .catch(err => alert("Gagal mengirim data ke server."));
         }
 
-        window.simpanKonfigurasi = () => {
+        window.simpanConfigGlobal = () => {
             const inputSaldo = parseInt(document.getElementById('cfg-saldo-awal').value);
             const inputMarquee = document.getElementById('cfg-marquee').value.trim();
 
             if(isNaN(inputSaldo) || !inputMarquee) {
-                alert('Mohon isi Konfigurasi Saldo & Teks Berjalan dengan benar!');
+                alert('Isi konfigurasi dengan benar!');
                 return;
             }
 
-            saldoAwal = inputSaldo;
-            teksMarquee = inputMarquee;
-
-            const payload = {
-                aksi: "simpan_config",
-                data: dataTransaksi,
-                saldoAwal: saldoAwal,
-                teksMarquee: teksMarquee
-            };
-
+            // Kirim request pembaruan kontrol parameter umum ke Google Sheets
             fetch(API_URL, {
                 method: "POST",
-                body: JSON.stringify(payload)
+                body: JSON.stringify({
+                    aksi: "simpan_semua",
+                    data: dataTransaksi,
+                    saldoAwal: inputSaldo,
+                    teksMarquee: inputMarquee
+                })
             })
-            .then(res => {
-                alert('Pengaturan umum berhasil diperbarui!');
-                initApp();
+            .then(res => res.json())
+            .then(respon => {
+                alert('Pengaturan global berhasil disimpan ke Cloud! Seluruh pengguna sekarang melihat perubahan ini.');
+                muatDataDariSheets();
             })
-            .catch(err => {
-                // Perubahan tetap diterapkan di lokal web bila server tidak diatur menerima config terpisah
-                alert("Pengaturan diperbarui di sisi lokal.");
-                initApp();
-            });
+            .catch(err => alert("Gagal memperbarui pengaturan cloud."));
         }
 
         window.hapusTransaksi = (index) => {
-            if(confirm('Apakah Anda yakin ingin menghapus data transaksi ini?')) {
+            if(confirm('Hapus transaksi ini permanen dari cloud?')) {
                 let dataTerbaru = [...dataTransaksi];
                 dataTerbaru.splice(index, 1);
 
-                const payload = { 
-                    aksi: "simpan", 
-                    data: dataTerbaru,
-                    saldoAwal: saldoAwal,
-                    teksMarquee: teksMarquee
-                };
-
                 fetch(API_URL, {
                     method: "POST",
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ 
+                        aksi: "simpan_semua", 
+                        data: dataTerbaru,
+                        saldoAwal: saldoAwal,
+                        teksMarquee: teksMarquee
+                    })
                 })
                 .then(res => res.json())
                 .then(respon => {
                     resetForm();
-                    alert('Data berhasil dihapus.');
+                    alert('Data dihapus dari database cloud.');
                     muatDataDariSheets();
                 })
-                .catch(err => alert("Gagal menghapus data di server."));
+                .catch(err => alert("Gagal memproses penghapusan di cloud."));
             }
         }
 
@@ -699,7 +681,6 @@
             document.getElementById('btn-cancel').style.display = "none";
         }
 
-        // Menjalankan muat data pertama saat web dibuka
         document.addEventListener("DOMContentLoaded", () => {
             muatDataDariSheets();
         });
