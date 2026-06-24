@@ -144,14 +144,13 @@
         .container { max-width: 1000px; margin: auto; padding: 40px 20px; width: 100%; padding-bottom: 120px; }
         header { text-align: center; margin-bottom: 30px; }
         .dashboard-perspective { perspective: 1500px; margin-bottom: 40px; }
-        .dashboard-card-3d { background: #0f172a; position: relative; border-radius: 25px; padding: 35px 20px; text-align: center; transform: rotateX(15deg); animation: float 6s ease-in-out infinite; box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; z-index: 1; max-width: 500px; margin: 0 auto; }
+        .dashboard-card-3d { background: #0f172a; position: relative; border-radius: 25px; padding: 35px 20px; text-align: center; transform: rotateX(15deg); animation: float 6s ease-in-out infinite; box-shadow: 0 25px 50px rgba(0,0,0,0.6); overflow: hidden; z-index: 1; max-width: 500px; margin: 0 auto; cursor: pointer; }
         .dashboard-card-3d::before { content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: conic-gradient(transparent, transparent, transparent, var(--primary-neon)); animation: rotate-light 4s linear infinite; z-index: -2; }
         .dashboard-card-3d::after { content: ""; position: absolute; inset: 2px; background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)); border-radius: 23px; z-index: -1; }
         @keyframes rotate-light { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         @keyframes float { 0%, 100% { transform: translateY(0px) rotateX(15deg); } 50% { transform: translateY(-12px) rotateX(15deg); } }
         .saldo-amount { font-size: clamp(1.8rem, 6vw, 2.8rem); font-weight: 800; text-shadow: 0 0 20px var(--primary-neon); position: relative; z-index: 2; }
         
-        /* Layout Grid Fleksibel Otomatis */
         .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; perspective: 1200px; }
         .menu-card-3d { background: #16213e; height: 120px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: all 0.2s ease; box-shadow: inset 6px 6px 12px rgba(0, 0, 0, 0.8), inset -6px -6px 12px rgba(255, 255, 255, 0.05); border: 1px solid rgba(0, 0, 0, 0.3); padding: 5px; }
         .menu-card-3d:active { transform: scale(0.98) translateY(2px); background: #1f2d5a; box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.6), 0px 0px 15px rgba(0, 242, 255, 0.3); border-color: var(--primary-neon); }
@@ -172,13 +171,11 @@
         .sig-box { text-align: center; font-size: 0.6rem; flex: 1; }
         .sig-name { color: var(--primary-neon); font-weight: 600; margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 5px; white-space: nowrap; }
 
-        /* Gaya Khusus Ukuran Teks Ringkasan Total Halaman */
         .page-total-summary { font-size: 1.05rem; opacity: 0.85; margin-bottom: 20px; letter-spacing: 0.5px; }
         .page-total-summary .amount { font-size: clamp(1.4rem, 5vw, 1.9rem); font-weight: 800; display: block; margin-top: 5px; }
         .page-total-summary .amount.in { color: var(--income); text-shadow: 0 0 15px rgba(74, 222, 128, 0.4); }
         .page-total-summary .amount.out { color: var(--expense); text-shadow: 0 0 15px rgba(248, 113, 113, 0.4); }
 
-        /* Form Kelola Data Styles */
         .form-container { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 20px; border: 1px solid rgba(0, 242, 255, 0.2); margin-bottom: 25px; }
         .form-group { margin-bottom: 15px; display: flex; flex-direction: column; }
         .form-group label { font-size: 0.75rem; color: var(--primary-neon); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
@@ -189,7 +186,6 @@
         .btn-edit { background: #eab308; color: black; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: bold; margin-right: 5px; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 0.7rem; font-weight: bold; }
 
-        /* Tombol keluar dari Mode Admin */
         .btn-logout { background: transparent; border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-size: 0.6rem; padding: 4px 10px; border-radius: 15px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .btn-logout:hover { background: #ef4444; color: white; }
 
@@ -222,7 +218,7 @@
     </div>
 
     <div class="marquee-container">
-        <marquee scrollamount="7">Laporan Keuangan Rukun Warga 013 - PNIC BLOK EMERALD THN 2026 </marquee>
+        <marquee id="marquee-text" scrollamount="7">Laporan Keuangan Rukun Warga 013 - PNIC BLOK EMERALD THN 2026 </marquee>
     </div>
 
     <div class="container page active" id="main-content">
@@ -330,8 +326,23 @@
 
     <div class="container page" id="halaman-kelola">
         <button class="btn-back" onclick="showPage('main')">← KEMBALI</button>
-        <h2 style="margin-bottom: 20px; color: #eab308;">Kelola Data Kas</h2>
+        <h2 style="margin-bottom: 20px; color: #eab308;">Kelola Data Kas & Pengaturan</h2>
         
+        <!-- PENGATURAN KAS UMUM -->
+        <div class="form-container" style="border-color: #eab308; margin-bottom: 35px;">
+            <h3 style="margin-bottom: 15px; font-size: 1rem; color: #eab308;">Pengaturan Umum (Saldo & Teks)</h3>
+            <div class="form-group">
+                <label>Saldo Awal Kas (Rp)</label>
+                <input type="number" id="cfg-saldo-awal" placeholder="Contoh: 1500000">
+            </div>
+            <div class="form-group">
+                <label>Teks Berjalan (Marquee)</label>
+                <textarea id="cfg-marquee" rows="2" placeholder="Masukkan pengumuman teks berjalan..."></textarea>
+            </div>
+            <button type="button" class="btn-submit" style="background: #eab308;" onclick="simpanKonfigurasi()">Update Pengaturan Umum</button>
+        </div>
+
+        <!-- FORM TRANSAKSI -->
         <div class="form-container">
             <h3 id="form-title" style="margin-bottom: 15px; font-size: 1rem;">Tambah Transaksi Baru</h3>
             <input type="hidden" id="tx-index" value="">
@@ -394,60 +405,43 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (Modular v9) via CDN -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
-        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-        // Konfigurasi Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCjMKdL6aWdQdreEC9b2DnqMMF-C_chptQ",
-            authDomain: "kas-rw013.firebaseapp.com",
-            projectId: "kas-rw013",
-            storageBucket: "kas-rw013.firebasestorage.app",
-            messagingSenderId: "905721130555",
-            appId: "1:905721130555:web:70154a7fa3df884387361e",
-            measurementId: "G-9568NWSVZ6"
-        };
-
-        // Inisialisasi Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const db = getDatabase(app);
-
-        // Variabel Global Sistem
-        const saldoAwal = 0; 
+    <script>
+        let saldoAwal = 0; 
+        let teksMarquee = "Laporan Keuangan Rukun Warga 013 - PNIC BLOK EMERALD THN 2026";
         const PIN_ADMIN = "Rw013"; 
         let klikHeaderCount = 0;
         let klikHeaderTimer;
+        let dataTransaksi = [];
 
-        const defaultData = [
-            { tgl: "04 April 2026", ket: "Kontribusi lingkungan NBN (nuansa Berkah Net)<br> 3 bulan <li>Januari <li>Februari <li>Maret", tipe: "masuk", nominal: 1950000 },
-            { tgl: "5 April 2026", ket: "Kontribusi lingkungan ID net, <br>  <li> bulan maret ", tipe: "masuk", nominal: 680000 },
-            { tgl: "20 Juni 2026", ket: "Kontribusi lingkungan SBN (Surya Berkah Nusantara)<br> 3 bulan <li>Januari <li>Februari <li>Maret", tipe: "masuk", nominal: 420000 },
-            { tgl: "20 Juni 2026", ket: "Kontribusi lingkungan SBN (Surya Berkah Nusantara)<br> 4 bulan thn 2025 <li>September <li>Oktober <li>Nopember <li>Desember ", tipe: "masuk", nominal: 560000 },
-            { tgl: "10 Mei 2026", ket: "Komsumsi rapat pengurus Rw 013", tipe: "keluar", nominal: 80000 },
-            { tgl: "15 Mei 2026", ket: "Perbaikan sarana prasarana / sport center <br>Rincian: <li>Pasir setengah colt = Rp.300,000 <li>Semen 4 sak = Rp 200.000, <li> Biaya admin Tranfer Dari bendaha ke pak waluyo = Rp. 2.500 ", tipe: "keluar", nominal: 502500 },
-            { tgl: "16 Mei 2026", ket: "Kegiatan Posyandu", tipe: "keluar", nominal: 200000 },
-            { tgl: "15 Juni 2026", ket: "Kegiatan Posyandu", tipe: "keluar", nominal: 200000 },
-            { tgl: "21 Juni 2026", ket: "Pengecatan Ban ibu - ibu PKK / Bak sampah <br>Rincian: <li>Cat minyak Alvian 3 kaleng = Rp.270,000 <li>Kuas 2 inch = Rp 20.000, <li> Thener 1 botol = Rp. 15.000 ", tipe: "keluar", nominal: 305000 }
-        ];
+        // GANTI DENGAN URL GOOGLE APPS SCRIPT ANDA
+        const API_URL = "https://script.google.com/macros/s/AKfycbz9RVzholtcVlG0y1U_glQFWIb4tcswmrtbCc9BgOj0v8kp3q4YDm4jh_t8g6njb4ec/exec"; 
 
-        let dataTransaksi = JSON.parse(localStorage.getItem('kas_rw013_data')) || defaultData;
-
-        // Hubungkan fungsi ke window agar dapat dipanggil dari elemen HTML onclick
         window.bukaGoogleDrive = () => {
             window.open("https://drive.google.com/drive/folders/1wPSnp3hTXV2NeDf2k9m4VcN9_rtzDdYf", "_blank");
+        }
+
+        window.hilangkanLoader = () => {
+            const loader = document.getElementById('loading-screen');
+            if(loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 800);
+            }
+        }
+
+        window.showPage = (pageName) => {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            if (pageName === 'main') document.getElementById('main-content').classList.add('active');
+            else if (pageName === 'rincian') document.getElementById('halaman-rincian').classList.add('active');
+            else if (pageName === 'pemasukan') document.getElementById('halaman-pemasukan').classList.add('active');
+            else if (pageName === 'pengeluaran') document.getElementById('halaman-pengeluaran').classList.add('active');
+            else if (pageName === 'kelola') document.getElementById('halaman-kelola').classList.add('active');
+            else if (pageName === 'diagram') document.getElementById('halaman-diagram').classList.add('active');
         }
 
         window.aksesAdminRahasia = () => {
             klikHeaderCount++;
             clearTimeout(klikHeaderTimer);
-            
-            klikHeaderTimer = setTimeout(() => {
-                klikHeaderCount = 0;
-            }, 1000);
+            klikHeaderTimer = setTimeout(() => { klikHeaderCount = 0; }, 1000);
 
             if (klikHeaderCount === 3) {
                 klikHeaderCount = 0;
@@ -468,17 +462,12 @@
             const statusMode = document.getElementById('status-mode');
             const btnLogout = document.getElementById('btn-logout-admin');
 
-            if (isAdmin) {
-                menuKelola.style.display = "flex";
-                statusMode.innerText = "MODE: ADMIN (ROHMAN / FIRMANSAH)";
-                statusMode.style.color = "#eab308";
-                btnLogout.style.display = "inline-block";
-            } else {
-                menuKelola.style.display = "none";
-                statusMode.innerText = "MODE: WARGA";
-                statusMode.style.color = "#64748b";
-                btnLogout.style.display = "none";
+            if (menuKelola) menuKelola.style.display = isAdmin ? "flex" : "none";
+            if (statusMode) {
+                statusMode.innerText = isAdmin ? "MODE: ADMIN (ROHMAN / FIRMANSAH)" : "MODE: WARGA";
+                statusMode.style.color = isAdmin ? "#eab308" : "#64748b";
             }
+            if (btnLogout) btnLogout.style.display = isAdmin ? "inline-block" : "none";
         }
 
         window.logoutAdmin = (event) => {
@@ -492,6 +481,12 @@
 
         function initApp() {
             cekStatusAkses();
+            
+            // Set data teks marquee global
+            document.getElementById('marquee-text').innerText = teksMarquee;
+            document.getElementById('cfg-marquee').value = teksMarquee;
+            document.getElementById('cfg-saldo-awal').value = saldoAwal;
+
             let tMasuk = 0;
             let tKeluar = 0;
             let htmlIn = "";
@@ -499,26 +494,27 @@
             let htmlManage = "";
 
             dataTransaksi.forEach((item, index) => {
+                const nominalAman = Number(item.nominal) || 0;
                 const row = `<tr>
                     <td style="font-size: 0.7rem; opacity: 0.8;">${item.tgl}</td>
                     <td>${item.ket}</td>
                     <td style="text-align:right; font-weight: 600; color:${item.tipe === 'masuk' ? 'var(--income)' : 'var(--expense)'}">
-                        ${item.nominal.toLocaleString('id-ID')}
+                        ${nominalAman.toLocaleString('id-ID')}
                     </td>
                 </tr>`;
                 
                 if(item.tipe === 'masuk') {
-                    tMasuk += item.nominal;
+                    tMasuk += nominalAman;
                     htmlIn += row;
                 } else {
-                    tKeluar += item.nominal;
+                    tKeluar += nominalAman;
                     htmlOut += row;
                 }
 
                 htmlManage += `<tr>
                     <td style="font-size: 0.7rem;">${item.tgl}</td>
                     <td style="font-size: 0.75rem;">[${item.tipe.toUpperCase()}] ${item.ket}</td>
-                    <td style="text-align:right; font-weight:600;">${item.nominal.toLocaleString('id-ID')}</td>
+                    <td style="text-align:right; font-weight:600;">${nominalAman.toLocaleString('id-ID')}</td>
                     <td style="text-align:center; white-space:nowrap;">
                         <button class="btn-edit" onclick="prepareEdit(${index})">Edit</button>
                         <button class="btn-delete" onclick="hapusTransaksi(${index})">Hapus</button>
@@ -526,9 +522,9 @@
                 </tr>`;
             });
 
-            const saldoAkhir = saldoAwal + tMasuk - tKeluar;
+            const saldoAkhir = Number(saldoAwal) + tMasuk - tKeluar;
             document.getElementById('display-saldo').innerText = "Rp " + saldoAkhir.toLocaleString('id-ID');
-            document.getElementById('label-saldo-awal').innerText = "Rp " + saldoAwal.toLocaleString('id-ID');
+            document.getElementById('label-saldo-awal').innerText = "Rp " + Number(saldoAwal).toLocaleString('id-ID');
             document.getElementById('total-masuk-hal').innerText = "Rp " + tMasuk.toLocaleString('id-ID');
             document.getElementById('total-keluar-hal').innerText = "Rp " + tKeluar.toLocaleString('id-ID');
             document.getElementById('table-pemasukan').innerHTML = htmlIn;
@@ -551,44 +547,45 @@
             }
         }
 
-        // Sinkronisasi Data dari Firebase Realtime Database
-        const dataRef = ref(db, 'transaksi');
-        onValue(dataRef, (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                dataTransaksi = data;
-                localStorage.setItem('kas_rw013_data', JSON.stringify(dataTransaksi));
-            } else {
-                // Jika database kosong (pertama kali), unggah defaultData ke Firebase
-                set(dataRef, defaultData);
-            }
-            initApp();
-        });
-
-        window.onload = () => {
-            initApp();
-            setTimeout(() => {
-                const loader = document.getElementById('loading-screen');
-                if(loader) {
-                    loader.style.opacity = '0';
-                    setTimeout(() => { loader.style.visibility = 'hidden'; }, 800);
+        function muatDataDariSheets() {
+            fetch(API_URL)
+            .then(response => response.json())
+            .then(res => {
+                // Mendukung jika backend Anda mengembalikan object atau array langsung
+                if (res && res.dataTransaksi) {
+                    dataTransaksi = res.dataTransaksi || [];
+                    saldoAwal = res.saldoAwal || 0;
+                    teksMarquee = res.teksMarquee || teksMarquee;
+                } else {
+                    dataTransaksi = res || [];
                 }
-            }, 2500);
-        };
-
-        window.showPage = (pageId) => {
-            if (pageId === 'kelola' && sessionStorage.getItem('is_admin_rw013') !== 'true') {
-                alert("Akses Ilegal! Anda bukan Admin.");
-                return;
-            }
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const target = pageId === 'main' ? 'main-content' : 'halaman-' + pageId;
-            document.getElementById(target).classList.add('active');
-            window.scrollTo(0,0);
-            resetForm();
+                initApp();
+                hilangkanLoader();
+            })
+            .catch(err => {
+                console.error("Gagal memuat data:", err);
+                dataTransaksi = [
+                    {tgl: "01 Jan 2026", tipe: "masuk", ket: "Gagal koneksi ke server / Gunakan Data Lokal", nominal: 0}
+                ];
+                initApp();
+                setTimeout(hilangkanLoader, 1000);
+            });
         }
 
-        /* --- MANAJEMEN DATA INTEGRASI FIREBASE --- */
+        window.prepareEdit = (index) => {
+            const item = dataTransaksi[index];
+            document.getElementById('form-title').innerText = "Edit Transaksi";
+            document.getElementById('tx-index').value = index;
+            document.getElementById('tx-tgl').value = item.tgl;
+            document.getElementById('tx-tipe').value = item.tipe;
+            document.getElementById('tx-ket').value = item.ket;
+            document.getElementById('tx-nominal').value = item.nominal;
+            document.getElementById('btn-save').innerText = "Simpan Perubahan";
+            document.getElementById('btn-cancel').style.display = "inline-block";
+            
+            // Scroll otomatis ke area form agar mudah dijangkau admin
+            document.getElementById('form-title').scrollIntoView({ behavior: 'smooth' });
+        }
 
         window.simpanTransaksi = () => {
             const tgl = document.getElementById('tx-tgl').value.trim();
@@ -603,46 +600,91 @@
             }
 
             const dataObj = { tgl, ket, tipe, nominal };
-
+            let dataTerbaru = [...dataTransaksi];
             if(index === "") {
-                dataTransaksi.push(dataObj);
+                dataTerbaru.push(dataObj);
             } else {
-                dataTransaksi[index] = dataObj;
+                dataTerbaru[index] = dataObj;
             }
 
-            // Simpan langsung ke cloud Firebase Realtime Database
-            set(dataRef, dataTransaksi)
-                .then(() => {
-                    resetForm();
-                    alert('Data transaksi berhasil disimpan ke server Cloud!');
-                })
-                .catch((error) => {
-                    alert('Gagal menyinkronkan data: ' + error.message);
-                });
+            // Memaketkan data beserta konfigurasi global untuk dikirim ke sheet
+            const payload = { 
+                aksi: "simpan", 
+                data: dataTerbaru,
+                saldoAwal: saldoAwal,
+                teksMarquee: teksMarquee
+            };
+
+            fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(respon => {
+                resetForm();
+                alert('Data transaksi berhasil disimpan!');
+                muatDataDariSheets();
+            })
+            .catch(err => alert("Gagal menyimpan data ke server."));
         }
 
-        window.prepareEdit = (index) => {
-            const item = dataTransaksi[index];
-            document.getElementById('form-title').innerText = "Edit Transaksi Data";
-            document.getElementById('tx-index').value = index;
-            document.getElementById('tx-tgl').value = item.tgl;
-            document.getElementById('tx-tipe').value = item.tipe;
-            document.getElementById('tx-ket').value = item.ket.replace(/<br>/g, "\n");
-            document.getElementById('tx-nominal').value = item.nominal;
-            
-            document.getElementById('btn-save').innerText = "Simpan Perubahan";
-            document.getElementById('btn-cancel').style.display = "block";
-            window.showPage('kelola');
+        window.simpanKonfigurasi = () => {
+            const inputSaldo = parseInt(document.getElementById('cfg-saldo-awal').value);
+            const inputMarquee = document.getElementById('cfg-marquee').value.trim();
+
+            if(isNaN(inputSaldo) || !inputMarquee) {
+                alert('Mohon isi Konfigurasi Saldo & Teks Berjalan dengan benar!');
+                return;
+            }
+
+            saldoAwal = inputSaldo;
+            teksMarquee = inputMarquee;
+
+            const payload = {
+                aksi: "simpan_config",
+                data: dataTransaksi,
+                saldoAwal: saldoAwal,
+                teksMarquee: teksMarquee
+            };
+
+            fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => {
+                alert('Pengaturan umum berhasil diperbarui!');
+                initApp();
+            })
+            .catch(err => {
+                // Perubahan tetap diterapkan di lokal web bila server tidak diatur menerima config terpisah
+                alert("Pengaturan diperbarui di sisi lokal.");
+                initApp();
+            });
         }
 
         window.hapusTransaksi = (index) => {
             if(confirm('Apakah Anda yakin ingin menghapus data transaksi ini?')) {
-                dataTransaksi.splice(index, 1);
-                set(dataRef, dataTransaksi)
-                    .then(() => {
-                        resetForm();
-                        alert('Data berhasil dihapus dari server cloud.');
-                    });
+                let dataTerbaru = [...dataTransaksi];
+                dataTerbaru.splice(index, 1);
+
+                const payload = { 
+                    aksi: "simpan", 
+                    data: dataTerbaru,
+                    saldoAwal: saldoAwal,
+                    teksMarquee: teksMarquee
+                };
+
+                fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(respon => {
+                    resetForm();
+                    alert('Data berhasil dihapus.');
+                    muatDataDariSheets();
+                })
+                .catch(err => alert("Gagal menghapus data di server."));
             }
         }
 
@@ -656,6 +698,11 @@
             document.getElementById('btn-save').innerText = "Simpan Transaksi";
             document.getElementById('btn-cancel').style.display = "none";
         }
+
+        // Menjalankan muat data pertama saat web dibuka
+        document.addEventListener("DOMContentLoaded", () => {
+            muatDataDariSheets();
+        });
     </script>
 </body>
 </html>
